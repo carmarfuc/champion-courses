@@ -25,3 +25,4 @@ Route::resource('settings', App\Http\Controllers\SettingController::class);
 Route::resource('subjects', App\Http\Controllers\SubjectController::class);
 Route::resource('courses', App\Http\Controllers\CoursesController::class);
 Route::resource('payments', App\Http\Controllers\CoursesController::class);
+Route::resource('users', App\Http\Controllers\UsersController::class);

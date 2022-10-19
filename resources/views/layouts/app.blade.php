@@ -34,6 +34,9 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ route('users.index') }}">{{ __('Users') }}</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ route('settings.index') }}">{{ __('Settings') }}</a>
                         </li>
                         <li class="nav-item">
@@ -43,7 +46,7 @@
                             <a class="nav-link" href="{{ route('courses.index') }}">{{ __('Courses') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('courses.index') }}">{{ __('Payments') }}</a>
+                            <a class="nav-link" href="{{ route('payments.index') }}">{{ __('Payments') }}</a>
                         </li>
                     </ul>
 

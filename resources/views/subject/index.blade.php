@@ -34,8 +34,8 @@
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
-                                        <th>No</th>
-                                        
+                                        <th>#</th>
+
 										<th>Name</th>
 										<th>Slug</th>
 										<th>Description</th>
@@ -43,7 +43,7 @@
 										<th>Start Date</th>
 										<th>Finish Date</th>
 										<th>Active</th>
-										<th>Teacher Id</th>
+										<th>Teacher</th>
 
                                         <th></th>
                                     </tr>
@@ -52,7 +52,7 @@
                                     @foreach ($subjects as $subject)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
+
 											<td>{{ $subject->name }}</td>
 											<td>{{ $subject->slug }}</td>
 											<td>{{ $subject->description }}</td>
@@ -60,7 +60,7 @@
 											<td>{{ $subject->start_date }}</td>
 											<td>{{ $subject->finish_date }}</td>
 											<td>{{ $subject->active }}</td>
-											<td>{{ $subject->teacher_id }}</td>
+											<td>{{ $subject->user->name }}</td>
 
                                             <td>
                                                 <form action="{{ route('subjects.destroy',$subject->id) }}" method="POST">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 /**
@@ -32,7 +33,8 @@ class SubjectController extends Controller
     public function create()
     {
         $subject = new Subject();
-        return view('subject.create', compact('subject'));
+        $teachers = User::pluck('name', 'id');
+        return view('subject.create', compact('subject', 'teachers'));
     }
 
     /**
@@ -73,8 +75,8 @@ class SubjectController extends Controller
     public function edit($id)
     {
         $subject = Subject::find($id);
-
-        return view('subject.edit', compact('subject'));
+        $teachers = User::pluck('name', 'id');
+        return view('subject.edit', compact('subject', 'teachers'));
     }
 
     /**

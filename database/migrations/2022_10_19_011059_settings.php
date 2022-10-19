@@ -14,7 +14,6 @@ class Settings extends Migration
     public function up()
     {
         Schema::create('settings', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id('id');
             $table->string('name');
             $table->string('slug')->unique();

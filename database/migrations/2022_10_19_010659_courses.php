@@ -14,7 +14,6 @@ class Courses extends Migration
     public function up()
     {
         Schema::create('courses', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->unsignedTinyInteger('final_score')->nullable();
 

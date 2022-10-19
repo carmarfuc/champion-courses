@@ -14,7 +14,6 @@ class Payments extends Migration
     public function up()
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->date('expiration_date');
             $table->date('payment_date')->nullable();

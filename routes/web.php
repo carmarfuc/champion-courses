@@ -22,3 +22,4 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::resource('settings', App\Http\Controllers\SettingController::class);
+Route::resource('subjects', App\Http\Controllers\SubjectController::class);

@@ -21,8 +21,8 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::resource('settings', App\Http\Controllers\SettingController::class);
-Route::resource('subjects', App\Http\Controllers\SubjectController::class);
-Route::resource('courses', App\Http\Controllers\CourseController::class);
-Route::resource('payments', App\Http\Controllers\PaymentController::class);
-Route::resource('users', App\Http\Controllers\UserController::class);
+Route::resource('settings', App\Http\Controllers\SettingController::class)->middleware('auth');
+Route::resource('subjects', App\Http\Controllers\SubjectController::class)->middleware('auth');
+Route::resource('courses', App\Http\Controllers\CourseController::class)->middleware('auth');
+Route::resource('payments', App\Http\Controllers\PaymentController::class)->middleware('auth');
+Route::resource('users', App\Http\Controllers\UserController::class)->middleware('auth');

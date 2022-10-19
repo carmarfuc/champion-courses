@@ -28,10 +28,10 @@ class Payment extends Model
     use SoftDeletes;
 
     static $rules = [
-		'expiration_date' => 'required',
+		'expiration_date' => 'required|date',
 		'status' => 'required',
-		'amount' => 'required',
-		'teacher_remuneration' => 'required',
+		'amount' => 'required|double',
+		'teacher_remuneration' => 'required|double',
 		'course_id' => 'required',
     ];
 
@@ -52,6 +52,6 @@ class Payment extends Model
     {
         return $this->hasOne('App\Models\Course', 'id', 'course_id');
     }
-    
+
 
 }

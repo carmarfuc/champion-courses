@@ -43,6 +43,9 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
+
+        $request->request->add(['slug' => strtolower(str_replace(' ', '.', $request->name))]);
+
         request()->validate(Setting::$rules);
 
         $setting = Setting::create($request->all());

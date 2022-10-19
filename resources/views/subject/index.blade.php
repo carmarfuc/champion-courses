@@ -56,7 +56,7 @@
 											<td>{{ $subject->name }}</td>
 											<td>{{ $subject->slug }}</td>
 											<td>{{ $subject->description }}</td>
-											<td>{{ $subject->monthly_price }}</td>
+											<td align="right">$ {{ @money($subject->monthly_price) }}</td>
 											<td>{{ $subject->start_date }}</td>
 											<td>{{ $subject->finish_date }}</td>
 											<td>{{ $subject->active }}</td>
@@ -83,3 +83,4 @@
         </div>
     </div>
 @endsection
+

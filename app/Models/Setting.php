@@ -24,9 +24,9 @@ class Setting extends Model
     use SoftDeletes;
 
     static $rules = [
-		'name' => 'required',
-		'slug' => 'required',
-		'value' => 'required',
+		'name' => 'required|min:3|max:150',
+        'slug' =>'required|min:3|max:150|unique:settings',
+		'value' => 'required|min:1|max:255',
     ];
 
     protected $perPage = 20;

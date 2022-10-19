@@ -13,7 +13,7 @@
         </div>
         <div class="form-group">
             {{ Form::label('description') }}
-            {{ Form::text('description', $subject->description, ['class' => 'form-control' . ($errors->has('description') ? ' is-invalid' : ''), 'placeholder' => 'Description']) }}
+            {{ Form::textarea('description', $subject->description, ['class' => 'form-control' . ($errors->has('description') ? ' is-invalid' : ''), 'placeholder' => 'Description']) }}
             {!! $errors->first('description', '<div class="invalid-feedback">:message</div>') !!}
         </div>
         <div class="form-group">
@@ -23,23 +23,23 @@
         </div>
         <div class="form-group">
             {{ Form::label('start_date') }}
-            {{ Form::text('start_date', $subject->start_date, ['class' => 'form-control' . ($errors->has('start_date') ? ' is-invalid' : ''), 'placeholder' => 'Start Date']) }}
+            {{ Form::date('start_date', $subject->start_date, ['class' => 'form-control' . ($errors->has('start_date') ? ' is-invalid' : ''), 'placeholder' => 'Start Date']) }}
             {!! $errors->first('start_date', '<div class="invalid-feedback">:message</div>') !!}
         </div>
         <div class="form-group">
             {{ Form::label('finish_date') }}
-            {{ Form::text('finish_date', $subject->finish_date, ['class' => 'form-control' . ($errors->has('finish_date') ? ' is-invalid' : ''), 'placeholder' => 'Finish Date']) }}
+            {{ Form::date('finish_date', $subject->finish_date, ['class' => 'form-control' . ($errors->has('finish_date') ? ' is-invalid' : ''), 'placeholder' => 'Finish Date']) }}
             {!! $errors->first('finish_date', '<div class="invalid-feedback">:message</div>') !!}
         </div>
         <div class="form-group">
             {{ Form::label('active') }}
-            {{ Form::text('active', $subject->active, ['class' => 'form-control' . ($errors->has('active') ? ' is-invalid' : ''), 'placeholder' => 'Active']) }}
+            {{ Form::checkbox('active', $subject->active, ['class' => 'form-control' . ($errors->has('active') ? ' is-invalid' : '')]) }}
             {!! $errors->first('active', '<div class="invalid-feedback">:message</div>') !!}
         </div>
 
         <div class="form-group">
-            {{ Form::label('teacher_id') }}
-            {{ Form::select('teacher_id', $teachers, $subject->teacher_id, ['class' => 'form-control' . ($errors->has('teacher_id') ? ' is-invalid' : ''), 'placeholder' => 'Teacher Id']) }}
+            {{ Form::label('teacher') }}
+            {{ Form::select('teacher_id', $teachers, $subject->teacher_id, ['class' => 'form-control' . ($errors->has('teacher_id') ? ' is-invalid' : ''), 'placeholder' => 'Select a teacher']) }}
             {!! $errors->first('teacher_id', '<div class="invalid-feedback">:message</div>') !!}
         </div>
 

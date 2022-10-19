@@ -47,6 +47,10 @@ class CourseController extends Controller
 
         $course = Course::create($request->all());
 
+        //dd($course);
+
+        //$request->merge(['slug' => strtolower(str_replace(' ', '.', $request->name))]);
+
         return redirect()->route('courses.index')
             ->with('success', 'Course created successfully.');
     }

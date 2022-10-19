@@ -35,31 +35,24 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
 										<th>Name</th>
 										<th>Slug</th>
 										<th>Value</th>
-
-                                        <th></th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($settings as $setting)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
+
 											<td>{{ $setting->name }}</td>
 											<td>{{ $setting->slug }}</td>
 											<td>{{ $setting->value }}</td>
 
                                             <td>
-                                                <form action="{{ route('settings.destroy',$setting->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('settings.show',$setting->id) }}"><i class="fa fa-fw fa-eye"></i> Show</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('settings.edit',$setting->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Delete</button>
-                                                </form>
+                                                <a class="btn btn-sm btn-success" href="{{ route('settings.edit',$setting->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="eliminar({{$setting->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -73,3 +66,11 @@
         </div>
     </div>
 @endsection
+
+
+<!-- Scripts -->
+<script>
+    const _token = "{{csrf_token()}}";
+</script>
+<script src="{{ asset('js/settings_scripts.js') }}" defer></script>
+

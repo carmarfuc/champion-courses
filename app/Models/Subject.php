@@ -31,12 +31,11 @@ class Subject extends Model
     use SoftDeletes;
 
     static $rules = [
-		'name' => 'required',
-		'slug' => 'required',
-		'monthly_price' => 'required',
-		'start_date' => 'required',
-		'finish_date' => 'required',
-		'active' => 'required',
+		'name' => 'required|min:3|max:150',
+		'slug' => 'required|unique:subjects|max:255',
+		'monthly_price' => 'required|numeric',
+		'start_date' => 'required|date',
+		'finish_date' => 'required|date',
 		'teacher_id' => 'required',
     ];
 
@@ -57,7 +56,7 @@ class Subject extends Model
     {
         return $this->hasMany('App\Models\Course', 'subject_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -65,6 +64,6 @@ class Subject extends Model
     {
         return $this->hasOne('App\Models\User', 'id', 'teacher_id');
     }
-    
+
 
 }

@@ -42,6 +42,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('courses.index') }}">{{ __('Courses') }}</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('courses.index') }}">{{ __('Payments') }}</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

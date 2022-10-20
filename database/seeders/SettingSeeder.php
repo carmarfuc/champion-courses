@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class SettingSeeder extends Seeder
 {
@@ -14,21 +15,18 @@ class SettingSeeder extends Seeder
     public function run()
     {
         DB::table('settings')->insert([
-            'name' => 'percentage_remuneration_of_the_teacher',
-            'slug' => '',
-            'value' => '',
+            'name' => 'TEACHER_REMUNERATION_PERCENTAGE',
+            'value' => '80',
         ]);
 
         DB::table('settings')->insert([
-            'name' => '',
-            'slug' => '',
-            'value' => '',
+            'name' => 'MAXIMUM_CONCURRENT_COURSES_PER_STUDENT',
+            'value' => '5',
         ]);
 
         DB::table('settings')->insert([
-            'name' => '',
-            'slug' => '',
-            'value' => '',
+            'name' => 'MAXIMUM_COURSES_PER_TEACHER_WEEKLY',
+            'value' => '5',
         ]);
     }
 }

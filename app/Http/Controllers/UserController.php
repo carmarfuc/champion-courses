@@ -94,13 +94,26 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        request()->validate(User::$rules);
 
-        $user = new User();
+        $rules = User::$rules;
+        $rules['email'] = $rules['email'] . ',email,' . $user->id;
+
+
+        //Only if you don't reset the password
+        if (!$request->password){
+            unset($rules['password']);
+            unset($rules['password_confirm']);
+        }
+
+        request()->validate($rules);
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->password = Hash::make($request->password);
+
+        //Only if you reset the password
+        if ($request->password){
+            $user->password = Hash::make($request->password);
+        }
 
         $user->save();
 

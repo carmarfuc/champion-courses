@@ -34,8 +34,8 @@ class Subject extends Model
 		'name' => 'required|min:3|max:150',
 		'slug' => 'required|unique:subjects|max:255',
 		'monthly_price' => 'required|numeric',
-		'start_date' => 'required|date',
-		'finish_date' => 'required|date',
+		'start_date' => 'required|date|after:tomorrow',
+		'finish_date' => 'required|date|after:start_date',
 		'teacher_id' => 'required',
     ];
 

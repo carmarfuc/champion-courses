@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Setting
@@ -14,18 +13,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property $value
  * @property $created_at
  * @property $updated_at
- * @property $deleted_at
  *
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Setting extends Model
 {
-    use SoftDeletes;
 
     static $rules = [
-		'name' => 'required|min:3|max:150',
-        'slug' =>'required|min:3|max:150|unique:settings',
+        'name' =>'required|min:3|max:150|unique:settings',
 		'value' => 'required|min:1|max:255',
     ];
 
@@ -36,7 +32,7 @@ class Setting extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','slug','value'];
+    protected $fillable = ['name','value'];
 
 
 

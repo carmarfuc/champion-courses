@@ -15,7 +15,7 @@ function eliminar(id){
                 data:{_token : _token},
                 dataType: "json"
             })
-            location.reload();
+            location.href='settings';
         }
     })
 }

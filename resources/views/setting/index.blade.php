@@ -7,7 +7,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-8 offset-sm-2">
                 <div class="card">
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -34,10 +34,9 @@
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
-                                        <th>No</th>
+                                        <th>#</th>
 										<th>Name</th>
-										<th>Slug</th>
-										<th>Value</th>
+									    <th>Value</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -46,8 +45,7 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
 
-											<td>{{ $setting->name }}</td>
-											<td>{{ $setting->slug }}</td>
+											<td>{{ str_replace('_',' ',$setting->name) }}</td>
 											<td>{{ $setting->value }}</td>
 
                                             <td>

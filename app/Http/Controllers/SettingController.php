@@ -46,7 +46,8 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-        $request->request->add(['name' => Str::slug($request->name, '_')]);
+
+        $request->request->add(['name' => strtoupper(Str::slug($request->name, '_'))]);
 
         request()->validate(Setting::$rules);
 
@@ -91,7 +92,8 @@ class SettingController extends Controller
      */
     public function update(Request $request, Setting $setting)
     {
-        $request->request->add(['name' => Str::slug($request->name, '_')]);
+
+        $request->request->add(['name' => strtoupper(Str::slug($request->name, '_'))]);
 
         $rules = Setting::$rules;
         $rules['name'] = $rules['name'] . ',name,' . $setting->id;

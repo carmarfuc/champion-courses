@@ -7,7 +7,7 @@ use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class SubjectController
@@ -15,6 +15,60 @@ use Illuminate\Support\Facades\Validator;
  */
 class SubjectController extends Controller
 {
+    public function isMaxCourse(Request $request, Subject $subject = null){
+
+        $AND_where = $subject ? "AND s.id <> $subject->id" : '';
+
+        $sqlDateList = "SELECT s.start_date, s.finish_date
+                FROM subjects s
+                WHERE s.teacher_id = 1
+                    AND s.finish_date >= NOW()
+                    AND s.deleted_at IS NULL
+                    $AND_where;";
+
+        $dateList =  DB::select($sqlDateList);
+
+        $sqlSetting = "SELECT se.value
+                        FROM settings se
+                        WHERE se.name = 'MAXIMUM_COURSES_PER_TEACHER_WEEKLY'";
+
+        try {
+            $maxCourses =  intval(DB::select($sqlSetting)[0]->value);
+        } catch (\Throwable $th) {
+            $maxCourses =  0;
+        }
+
+        if(sizeof($dateList) > 0){
+            if ($maxCourses > 1){
+                $firstWeek=date('W',strtotime($request->start_date));
+                $lastWeek=date('W',strtotime($request->finish_date));
+                $arrayBase = array_keys(array_fill(($lastWeek<$firstWeek?$lastWeek:$firstWeek),abs($lastWeek-$firstWeek),'0'));
+
+                foreach($dateList as $item){
+                    $firstWeek=date('W',strtotime($item->start_date));
+                    $lastWeek=date('W',strtotime($item->finish_date));
+                    $arrayAux = array_keys(array_fill(($lastWeek<$firstWeek?$lastWeek:$firstWeek),abs($lastWeek-$firstWeek),'0'));
+
+                    $arrayBase = array_merge($arrayBase,$arrayAux);
+                }
+
+                $arrayResult = array_count_values($arrayBase);
+                rsort($arrayResult);
+
+                $rst = ($arrayResult[0] > $maxCourses) ? true : false;
+            }
+
+            else{
+                $rst = false;
+            }
+        }
+        else{
+            $rst = false;
+        }
+        return $rst;
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -46,8 +100,14 @@ class SubjectController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreSubjectRequest $request)
+    public function store(Request $request)
     {
+
+        if($this->isMaxCourse($request)){
+            return back()->with('error', 'The date range entered exceeds the number of subjects per week allowed per teacher')
+                    ->withInput();
+        }
+
         $request->request->add(['slug' => Str::slug($request->name, '_')]);
 
         request()->validate(Subject::$rules);
@@ -97,6 +157,10 @@ class SubjectController extends Controller
 
         $rules = Subject::$rules;
         $rules['slug'] = $rules['slug'] . ',slug,' . $subject->id;
+
+        if($this->maxCourses){
+
+        }
 
         request()->validate($rules);
 

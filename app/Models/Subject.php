@@ -35,7 +35,7 @@ class Subject extends Model
 		'slug' => 'required|max:255|unique:subjects',
 		'monthly_price' => 'required|regex:/^\d+(\.\d{1,2})?$/',
         'status' => 'required',
-		'start_date' => 'required|date|after:today',
+		'start_date' => 'required|date|after:yesterday',
 		'finish_date' => 'required|date|after:start_date',
 		'teacher_id' => 'required',
     ];

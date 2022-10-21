@@ -26,3 +26,6 @@ Route::resource('subjects', App\Http\Controllers\SubjectController::class)->midd
 Route::resource('courses', App\Http\Controllers\CourseController::class)->middleware('auth');
 Route::resource('payments', App\Http\Controllers\PaymentController::class)->middleware('auth');
 Route::resource('users', App\Http\Controllers\UserController::class)->middleware('auth');
+
+//Validation MaxCourses
+Route::get('subjects/validate/max_courses', [App\Http\Controllers\SubjectController::class, 'maxCourses'])->middleware('auth');

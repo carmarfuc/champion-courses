@@ -16,7 +16,7 @@
                         <span class="card-title">Create Subject</span>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('subjects.store') }}"  role="form" enctype="multipart/form-data">
+                        <form id="form" method="POST" action="{{ route('subjects.store') }}"  role="form" enctype="multipart/form-data">
                             @csrf
 
                             @include('subject.form')

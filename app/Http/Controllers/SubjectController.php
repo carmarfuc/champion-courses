@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSubjectRequest;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Class SubjectController
@@ -43,8 +46,10 @@ class SubjectController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreSubjectRequest $request)
     {
+        $request->request->add(['slug' => Str::slug($request->name, '_')]);
+
         request()->validate(Subject::$rules);
 
         $subject = Subject::create($request->all());
@@ -88,7 +93,12 @@ class SubjectController extends Controller
      */
     public function update(Request $request, Subject $subject)
     {
-        request()->validate(Subject::$rules);
+        $request->request->add(['slug' => Str::slug($request->name, '_')]);
+
+        $rules = Subject::$rules;
+        $rules['slug'] = $rules['slug'] . ',slug,' . $subject->id;
+
+        request()->validate($rules);
 
         $subject->update($request->all());
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Validator;
+use Illuminate\Support\Str;
 
 /**
  * Class SettingController
@@ -13,15 +13,6 @@ use App\Http\Controllers\Validator;
 class SettingController extends Controller
 {
 
-    /**
-     * Convert string to slug.
-     *
-     * @param  String $string
-     * @return String
-     */
-    private function slugConvert($string){
-        return strtoupper(preg_replace(['/\s+/','/^\s|\s$/'],[' ','_'], $string));
-    }
 
     /**
      * Display a listing of the resource.
@@ -55,8 +46,7 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-
-        $request->request->add(['name' => $this->slugConvert($request->name)]);
+        $request->request->add(['name' => Str::slug($request->name, '_')]);
 
         request()->validate(Setting::$rules);
 
@@ -101,7 +91,7 @@ class SettingController extends Controller
      */
     public function update(Request $request, Setting $setting)
     {
-        $request->request->add(['name' => $this->slugConvert($request->name)]);
+        $request->request->add(['name' => Str::slug($request->name, '_')]);
 
         $rules = Setting::$rules;
         $rules['name'] = $rules['name'] . ',name,' . $setting->id;

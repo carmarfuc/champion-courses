@@ -32,9 +32,10 @@ class Subject extends Model
 
     static $rules = [
 		'name' => 'required|min:3|max:150',
-		'slug' => 'required|unique:subjects|max:255',
-		'monthly_price' => 'required|numeric',
-		'start_date' => 'required|date|after:tomorrow',
+		'slug' => 'required|max:255|unique:subjects',
+		'monthly_price' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+        'status' => 'required',
+		'start_date' => 'required|date|after:today',
 		'finish_date' => 'required|date|after:start_date',
 		'teacher_id' => 'required',
     ];
@@ -46,7 +47,7 @@ class Subject extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','slug','description','monthly_price','start_date','finish_date','active','teacher_id'];
+    protected $fillable = ['name','slug','description','monthly_price','start_date','finish_date','status','teacher_id'];
 
 
     /**

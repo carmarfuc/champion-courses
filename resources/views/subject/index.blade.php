@@ -37,12 +37,11 @@
                                         <th>#</th>
 
 										<th>Name</th>
-										<th>Slug</th>
 										<th>Description</th>
 										<th>Monthly Price</th>
 										<th>Start Date</th>
 										<th>Finish Date</th>
-										<th>Active</th>
+										<th>Status</th>
 										<th>Teacher</th>
 
                                         <th></th>
@@ -54,12 +53,15 @@
                                             <td>{{ ++$i }}</td>
 
 											<td>{{ $subject->name }}</td>
-											<td>{{ $subject->slug }}</td>
 											<td>{{ $subject->description }}</td>
-											<td align="right">$ {{ @money($subject->monthly_price) }}</td>
+											<td>$ {{ @money($subject->monthly_price) }}</td>
 											<td>{{ $subject->start_date }}</td>
 											<td>{{ $subject->finish_date }}</td>
-											<td>{{ $subject->active }}</td>
+											<td>
+                                                <span class="badge {{($subject->status == 'inactive') ? 'text-bg-danger' : 'text-bg-success'}}">
+                                                    {{ strtoupper($subject->status) }}
+                                                </span>
+                                            </td>
 											<td>{{ $subject->user->name }}</td>
 
                                             <td>

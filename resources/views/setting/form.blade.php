@@ -18,7 +18,7 @@
     <div class="box-footer  mt-4">
         <div class="row">
             <div class="col-md-4">
-                <a href="{{ route('settings.index') }}" class="btn btn-default">Cancel</a>
+                <a href="{{ route('settings.index') }}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </div>

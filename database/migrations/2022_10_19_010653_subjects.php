@@ -21,7 +21,7 @@ class Subjects extends Migration
             $table->unsignedDecimal('monthly_price', $precision = 8, $scale = 2);
             $table->date('start_date');
             $table->date('finish_date');
-            $table->boolean('active')->default(false);
+            $table->set('status', ['inactive', 'active'])->default('inactive');
 
             $table->unsignedBigInteger('teacher_id');
             $table->foreign('teacher_id')->references('id')->on('users');

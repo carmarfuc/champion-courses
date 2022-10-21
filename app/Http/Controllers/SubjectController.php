@@ -158,8 +158,9 @@ class SubjectController extends Controller
         $rules = Subject::$rules;
         $rules['slug'] = $rules['slug'] . ',slug,' . $subject->id;
 
-        if($this->maxCourses){
-
+        if($this->isMaxCourse($request, $subject)){
+            return back()->with('error', 'The date range entered exceeds the number of subjects per week allowed per teacher')
+                    ->withInput();
         }
 
         request()->validate($rules);

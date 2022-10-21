@@ -29,6 +29,7 @@ class Course extends Model
     static $rules = [
 		'subject_id' => 'required',
 		'student_id' => 'required',
+        'final_score' => 'numeric|min:1|max:10',
     ];
 
     protected $perPage = 20;
@@ -48,7 +49,7 @@ class Course extends Model
     {
         return $this->hasMany('App\Models\Payment', 'course_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -56,7 +57,7 @@ class Course extends Model
     {
         return $this->hasOne('App\Models\Subject', 'id', 'subject_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -64,6 +65,6 @@ class Course extends Model
     {
         return $this->hasOne('App\Models\User', 'id', 'student_id');
     }
-    
+
 
 }

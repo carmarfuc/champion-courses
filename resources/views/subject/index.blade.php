@@ -65,13 +65,9 @@
 											<td>{{ $subject->user->name }}</td>
 
                                             <td>
-                                                <form action="{{ route('subjects.destroy',$subject->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('subjects.show',$subject->id) }}"><i class="fa fa-fw fa-eye"></i> Show</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('subjects.edit',$subject->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Delete</button>
-                                                </form>
+                                                <a class="btn btn-sm btn-primary " href="{{ route('subjects.show',$subject->id) }}"><i class="fa fa-fw fa-eye"></i> Show</a>
+                                                <a class="btn btn-sm btn-success" href="{{ route('subjects.edit',$subject->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$subject->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -86,3 +82,8 @@
     </div>
 @endsection
 
+@section('scripts')
+
+    @include('subject/inc/scripts')
+
+@endsection

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Subject;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 /**
@@ -32,7 +34,9 @@ class CourseController extends Controller
     public function create()
     {
         $course = new Course();
-        return view('course.create', compact('course'));
+        $subjects = Subject::where('status', 'active')->pluck('name', 'id');
+        $students = User::pluck('name', 'id');
+        return view('course.create', compact('course','subjects', 'students'));
     }
 
     /**
@@ -46,10 +50,6 @@ class CourseController extends Controller
         request()->validate(Course::$rules);
 
         $course = Course::create($request->all());
-
-        //dd($course);
-
-        //$request->merge(['slug' => strtolower(str_replace(' ', '.', $request->name))]);
 
         return redirect()->route('courses.index')
             ->with('success', 'Course created successfully.');
@@ -77,8 +77,9 @@ class CourseController extends Controller
     public function edit($id)
     {
         $course = Course::find($id);
-
-        return view('course.edit', compact('course'));
+        $subjects = Subject::pluck('name', 'id');
+        $students = User::pluck('name', 'id');
+        return view('course.edit', compact('course','subjects', 'students'));
     }
 
     /**

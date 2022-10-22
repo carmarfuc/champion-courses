@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use App\Models\Course;
 
 /**
  * Class PaymentController
@@ -32,7 +33,8 @@ class PaymentController extends Controller
     public function create()
     {
         $payment = new Payment();
-        return view('payment.create', compact('payment'));
+        $courses = Course::pluck('name', 'id');
+        return view('payment.create', compact('payment', 'courses'));
     }
 
     /**
@@ -73,8 +75,9 @@ class PaymentController extends Controller
     public function edit($id)
     {
         $payment = Payment::find($id);
-
-        return view('payment.edit', compact('payment'));
+        $courses = Course::pluck('alias', 'id');
+        //$ProjectManagers = Employees::where('designation', 1)->get()->pluck('full_name', 'id');
+        return view('payment.edit', compact('payment', 'courses'));
     }
 
     /**

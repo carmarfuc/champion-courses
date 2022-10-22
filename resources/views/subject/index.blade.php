@@ -44,7 +44,7 @@
 										<th>Status</th>
 										<th>Teacher</th>
 
-                                        <th></th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>

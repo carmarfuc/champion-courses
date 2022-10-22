@@ -34,32 +34,27 @@
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
-                                        <th>No</th>
-                                        
-										<th>Final Score</th>
-										<th>Subject Id</th>
-										<th>Student Id</th>
+                                        <th>#</th>
 
-                                        <th></th>
+										<th>Subject</th>
+										<th>Student</th>
+                                        <th>Final Score</th>
+
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($courses as $course)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
+
+											<td>{{ $course->subject->name }}</td>
+											<td>{{ $course->user->name }}</td>
 											<td>{{ $course->final_score }}</td>
-											<td>{{ $course->subject_id }}</td>
-											<td>{{ $course->student_id }}</td>
 
                                             <td>
-                                                <form action="{{ route('courses.destroy',$course->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('courses.show',$course->id) }}"><i class="fa fa-fw fa-eye"></i> Show</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('courses.edit',$course->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Delete</button>
-                                                </form>
+                                                <a class="btn btn-sm btn-success" href="{{ route('courses.edit',$course->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$course->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -72,4 +67,10 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+
+    @include('course/inc/scripts')
+
 @endsection

@@ -29,7 +29,7 @@ class Course extends Model
     static $rules = [
 		'subject_id' => 'required',
 		'student_id' => 'required',
-        'final_score' => 'numeric|min:1|max:10',
+        'final_score' => 'numeric|min:1|max:10|nullable',
     ];
 
     protected $perPage = 20;
@@ -66,5 +66,12 @@ class Course extends Model
         return $this->hasOne('App\Models\User', 'id', 'student_id');
     }
 
+    /**
+     * @return String
+     */
+    public function getAliasAttribute()
+    {
+        return $this->subject->name . ' - ' . $this->user->name;
+    }
 
 }

@@ -29,10 +29,11 @@ class Payment extends Model
 
     static $rules = [
 		'expiration_date' => 'required|date',
-		'status' => 'required',
+		'status' => 'required|in:PENDING,PAID',
 		'amount' => 'required|double',
 		'teacher_remuneration' => 'required|double',
-		'course_id' => 'required',
+		'course_id' => 'required|numeric',
+        'remuneration_status' => 'required|in:PENDING,CHARGED',
     ];
 
     protected $perPage = 20;

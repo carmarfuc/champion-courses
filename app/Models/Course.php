@@ -27,8 +27,8 @@ class Course extends Model
     use SoftDeletes;
 
     static $rules = [
-		'subject_id' => 'required',
-		'student_id' => 'required',
+		'subject_id' => 'required|numeric',
+		'student_id' => 'required|numeric',
         'final_score' => 'numeric|min:1|max:10|nullable',
     ];
 

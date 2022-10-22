@@ -17,9 +17,10 @@ class Payments extends Migration
             $table->id();
             $table->date('expiration_date');
             $table->date('payment_date')->nullable();
-            $table->set('status', ['pending', 'paid']);
+            $table->set('status', ['PENDING', 'PAID']);
             $table->unsignedDecimal('amount', $precision = 8, $scale = 2);
             $table->unsignedDecimal('teacher_remuneration', $precision = 8, $scale = 2);
+            $table->set('remuneration_status', ['PENDING', 'CHARGED']);
 
             $table->unsignedBigInteger('course_id');
             $table->foreign('course_id')->references('id')->on('courses');

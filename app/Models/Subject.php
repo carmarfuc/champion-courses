@@ -34,10 +34,10 @@ class Subject extends Model
 		'name' => 'required|min:3|max:150',
 		'slug' => 'required|max:255|unique:subjects',
 		'monthly_price' => 'required|regex:/^\d+(\.\d{1,2})?$/',
-        'status' => 'required',
+        'status' => 'required|in:INACTIVE,ACTIVE',
 		'start_date' => 'required|date|after:yesterday',
 		'finish_date' => 'required|date|after:start_date',
-		'teacher_id' => 'required',
+		'teacher_id' => 'required|numeric',
     ];
 
     protected $perPage = 20;

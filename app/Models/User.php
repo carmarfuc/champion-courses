@@ -18,6 +18,7 @@ class User extends Authenticatable
 		'email' => 'required|string|email|max:255|unique:users',
 		'password' => 'required|string|min:8',
         'password_confirm' => 'required|same:password',
+        'role' => 'required|in:ADMINISTRATOR,TEACHER,STUDENT',
     ];
 
 

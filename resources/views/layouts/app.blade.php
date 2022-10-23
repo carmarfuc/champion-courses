@@ -48,9 +48,6 @@
                             <a class="nav-link" href="{{ route('users.index') }}">{{ __('Users') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('settings.index') }}">{{ __('Settings') }}</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="{{ route('subjects.index') }}">{{ __('Subjects') }}</a>
                         </li>
                         <li class="nav-item">
@@ -58,6 +55,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('payments.index') }}">{{ __('Payments') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('settings.index') }}">{{ __('Settings') }}</a>
                         </li>
                     </ul>
                     @endif

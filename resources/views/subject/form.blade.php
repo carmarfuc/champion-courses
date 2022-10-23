@@ -37,7 +37,7 @@
         </div>
         <div class="form-group mt-3">
             {{ Form::label('status') }}
-            {{ Form::select('status', ['inactive' => 'inactive', 'active' => 'active'], $subject->status, ['value' => old('status'), 'class' => 'form-control' . ($errors->has('status') ? ' is-invalid' : '')]) }}
+            {{ Form::select('status', ['INACTIVE' => 'INACTIVE', 'ACTIVE' => 'ACTIVE'], $subject->status, ['value' => old('status'), 'class' => 'form-control' . ($errors->has('status') ? ' is-invalid' : '')]) }}
             {!! $errors->first('status', '<div class="invalid-feedback">:message</div>') !!}
         </div>
 

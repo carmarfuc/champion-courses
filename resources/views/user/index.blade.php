@@ -34,12 +34,13 @@
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
-                                        <th>No</th>
+                                        <th>#</th>
 
 										<th>Name</th>
 										<th>Email</th>
+                                        <th>Role</th>
 
-                                        <th></th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -49,17 +50,17 @@
 
 											<td>{{ $user->name }}</td>
 											<td>{{ $user->email }}</td>
+                                            <td>
+                                                <span class="badge @if($user->role == 'STUDENT') text-bg-secondary @elseif($user->role == 'TEACHER') text-bg-primary @else text-bg-success @endif">
+                                                    {{ $user->role }}
+                                                </span>
+                                                </td>
 
                                             <td>
-
-                                                <form action="{{ route('users.destroy',$user->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-success" href="{{ route('users.edit',$user->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                    @if (Auth::user()->email != $user->email)
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm delete"><i class="fa fa-fw fa-trash"></i> Delete</button>
-                                                    @endif
-                                                </form>
+                                                <a class="btn btn-sm btn-success" href="{{ route('users.edit',$user->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
+                                                @if (Auth::user()->email != $user->email)
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="remove({{$user->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -72,4 +73,10 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+
+    @include('user/inc/scripts')
+
 @endsection

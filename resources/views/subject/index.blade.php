@@ -58,8 +58,8 @@
 											<td>{{ $subject->start_date }}</td>
 											<td>{{ $subject->finish_date }}</td>
 											<td>
-                                                <span class="badge {{($subject->status == 'inactive') ? 'text-bg-danger' : 'text-bg-success'}}">
-                                                    {{ strtoupper($subject->status) }}
+                                                <span class="badge {{($subject->status == 'INACTIVE') ? 'text-bg-danger' : 'text-bg-success'}}">
+                                                    {{ $subject->status }}
                                                 </span>
                                             </td>
 											<td>{{ $subject->user->name }}</td>
@@ -67,7 +67,7 @@
                                             <td>
                                                 <a class="btn btn-sm btn-primary " href="{{ route('subjects.show',$subject->id) }}"><i class="fa fa-fw fa-eye"></i> Show</a>
                                                 <a class="btn btn-sm btn-success" href="{{ route('subjects.edit',$subject->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$subject->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="remove({{$subject->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                             </td>
                                         </tr>
                                     @endforeach

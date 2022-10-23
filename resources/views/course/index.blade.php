@@ -7,7 +7,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-8 offset-sm-2">
                 <div class="card">
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -16,8 +16,8 @@
                                 {{ __('Course') }}
                             </span>
 
-                             <div class="float-right">
-                                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                             <div class="float-end">
+                                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
                                   {{ __('Create New') }}
                                 </a>
                               </div>
@@ -48,7 +48,9 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
 
-											<td>{{ $course->subject->name }}</td>
+											<td><b>{{ $course->subject->name }}</b>
+                                                <small class="text-muted">by {{$course->subject->user->name}} <i>({{$course->subject->start_date}} | {{$course->subject->finish_date}})</i></small>
+                                            </td>
 											<td>{{ $course->user->name }}</td>
 											<td>{{ $course->final_score }}</td>
 

@@ -90,7 +90,7 @@ class SubjectController extends Controller
     public function create()
     {
         $subject = new Subject();
-        $teachers = User::pluck('name', 'id');
+        $teachers = User::where('role','TEACHER')->pluck('name', 'id');
         return view('subject.create', compact('subject', 'teachers'));
     }
 
@@ -140,7 +140,7 @@ class SubjectController extends Controller
     public function edit($id)
     {
         $subject = Subject::find($id);
-        $teachers = User::pluck('name', 'id');
+        $teachers = User::where('role','TEACHER')->pluck('name', 'id');
         return view('subject.edit', compact('subject', 'teachers'));
     }
 

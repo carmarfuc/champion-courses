@@ -7,7 +7,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-8 offset-sm-2">
                 <div class="card">
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -16,8 +16,8 @@
                                 {{ __('Subject') }}
                             </span>
 
-                             <div class="float-right">
-                                <a href="{{ route('subjects.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                             <div class="float-end">
+                                <a href="{{ route('subjects.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
                                   {{ __('Create New') }}
                                 </a>
                               </div>
@@ -37,7 +37,6 @@
                                         <th>#</th>
 
 										<th>Name</th>
-										<th>Description</th>
 										<th>Monthly Price</th>
 										<th>Start Date</th>
 										<th>Finish Date</th>
@@ -53,7 +52,6 @@
                                             <td>{{ ++$i }}</td>
 
 											<td>{{ $subject->name }}</td>
-											<td>{{ $subject->description }}</td>
 											<td>$ {{ @money($subject->monthly_price) }}</td>
 											<td>{{ $subject->start_date }}</td>
 											<td>{{ $subject->finish_date }}</td>

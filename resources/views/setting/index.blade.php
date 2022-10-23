@@ -16,8 +16,8 @@
                                 {{ __('Setting') }}
                             </span>
 
-                             <div class="float-right">
-                                <a href="{{ route('settings.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                             <div class="float-end">
+                                <a href="{{ route('settings.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
                                   {{ __('Create New') }}
                                 </a>
                               </div>

@@ -967,7 +967,7 @@ progress {
     flex: 0 0 auto;
     width: 91.66666667%;
   }
-  .col-sm-12 {
+  .col-sm-8 offset-sm-2 {
     flex: 0 0 auto;
     width: 100%;
   }

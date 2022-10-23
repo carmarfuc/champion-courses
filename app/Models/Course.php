@@ -69,7 +69,7 @@ class Course extends Model
     /**
      * @return String
      */
-    public function getAliasAttribute()
+    public function getNameWithTeacherAttribute()
     {
         return $this->subject->name . ' - ' . $this->user->name;
     }

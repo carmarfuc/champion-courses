@@ -7,7 +7,7 @@
 @section('content')
     <section class="content container-fluid">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-sm-8 offset-sm-2">
 
                 @includeif('partials.errors')
 

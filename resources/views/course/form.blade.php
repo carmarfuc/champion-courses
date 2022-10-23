@@ -24,9 +24,9 @@
         </div>
         @endif
     </div>
-    <div class="box-footer  mt-4">
+    <div class="box-footer mt-4 float-end">
         <div class="row">
-            <div class="col-md-4">
+            <div>
                 <a href="{{ route('courses.index') }}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>

@@ -40,7 +40,7 @@ class CourseController extends Controller
             DB::select("SELECT s.id, CONCAT(s.name, ' by ', u.name, ' (', s.start_date, ' | ', s.finish_date, ')') AS name
                         FROM subjects s
                             INNER JOIN users u ON s.teacher_id = u.id
-                        WHERE s.status = 'ACTIVE' AND s.deleted_at IS NULL;")
+                        WHERE s.start_date >= NOW() AND s.status = 'ACTIVE' AND s.deleted_at IS NULL;")
                         )->pluck('name', 'id');
 
         $students = User::pluck('name', 'id');
@@ -55,12 +55,23 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
+
+        //Validate duplicated
+        $duplicated = Course::where([
+            ['subject_id', $request->subject_id],
+            ['student_id', $request->student_id],
+        ])->get()->count();
+
+        if($duplicated > 0){
+            return back()->with('error', "Course already exists for this student")
+            ->withInput();
+        }
+
         $subject = Subject::find($request->subject_id);
 
         //Validate the teacher can't be a student of the subject he teaches.
         if($request->student_id == $subject->teacher_id){
-            return redirect()->route('courses.create')
-            ->with('error', "The teacher can't be a student of the subject he teaches.")
+            return back()->with('error',"The teacher can't be a student of the subject he teaches.")
             ->withInput();
         }
 
@@ -116,6 +127,18 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
+        //Validate duplicated
+        $duplicated = Course::where([
+            ['subject_id', $request->subject_id],
+            ['student_id', $request->student_id],
+            ['id', '!=', $course->id],
+        ])->get()->count();
+
+        if($duplicated > 0){
+            return back()->with('error', "Course already exists for this student")
+            ->withInput();
+        }
+
         $subject = Subject::find($request->subject_id);
 
         //Validate the teacher can't be a student of the subject he teaches.

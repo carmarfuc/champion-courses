@@ -36,8 +36,8 @@
                                     <tr>
                                         <th>#</th>
 
-										<th>Subject</th>
 										<th>Student</th>
+										<th>Subject</th>
                                         <th>Final Score</th>
 
                                         <th>Actions</th>
@@ -48,10 +48,10 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
 
+                                            <td>{{ $course->user->name }}</td>
 											<td><b>{{ $course->subject->name }}</b>
                                                 <small class="text-muted">by {{$course->subject->user->name}} <i>({{$course->subject->start_date}} | {{$course->subject->finish_date}})</i></small>
                                             </td>
-											<td>{{ $course->user->name }}</td>
 											<td>{{ $course->final_score }}</td>
 
                                             <td>

@@ -11,14 +11,14 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: 'users/'+id,
+                    url: 'settings/'+id,
                     type: "DELETE",
                     data:{
                             _token : "{{csrf_token()}}"
                         },
                     dataType: "json"
                 })
-                location.href=@if(empty(Request::get('page'))) "users" @else "users?page={{Request::get('page')}}" @endif
+                location.href=@if(empty(Request::get('page'))) "settings" @else "settings?page={{Request::get('page')}}" @endif
             }
         })
     }

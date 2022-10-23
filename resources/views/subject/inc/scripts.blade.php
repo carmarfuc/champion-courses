@@ -18,7 +18,7 @@
                         },
                     dataType: "json"
                 })
-                location.href='subjects';
+                location.href=@if(empty(Request::get('page'))) "subjects" @else "subjects?page={{Request::get('page')}}" @endif
             }
         })
     }

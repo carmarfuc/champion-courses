@@ -50,7 +50,7 @@
 
                                             <td>
                                                 <a class="btn btn-sm btn-success" href="{{ route('settings.edit',$setting->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="eliminar({{$setting->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="remove({{$setting->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -66,9 +66,9 @@
 @endsection
 
 
-<!-- Scripts -->
-<script>
-    const _token = "{{csrf_token()}}";
-</script>
-<script src="{{ asset('js/settings_scripts.js') }}" defer></script>
+@section('scripts')
+
+    @include('setting/inc/scripts')
+
+@endsection
 

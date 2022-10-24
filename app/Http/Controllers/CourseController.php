@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Subject;
 use App\Models\User;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -48,6 +49,86 @@ class CourseController extends Controller
     }
 
     /**
+     * Validate duplicated for student.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  unsignedBigInteger $id
+     * @return boolean
+     */
+    private function isDuplicateForStudent(Request $request, $id = null){
+
+        if($id){
+            $duplicated = Course::where([
+                ['subject_id', $request->subject_id],
+                ['student_id', $request->student_id],
+            ])->get()->count();
+        }
+        else{
+            $duplicated = Course::where([
+                ['subject_id', $request->subject_id],
+                ['student_id', $request->student_id],
+                ['id', '!=', $id],
+            ])->get()->count();
+        }
+
+        return ($duplicated > 0) ? true : false;
+    }
+
+    /**
+     * Validate the teacher can't be a student of the subject he teaches.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return boolean
+     */
+    private function isStudentTeacher($request){
+
+        $subject = Subject::find($request->subject_id);
+
+        return ($request->student_id == $subject->teacher_id) ? true : false;
+
+    }
+
+    /**
+     * Validates the number of overlapping periods.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  unsignedBigInteger $id
+     * @return boolean
+     */
+    private function isAnInvalidPeriod($request, $id = null){
+
+
+        try {
+            $configuredOverlays = intval(Setting::where('name','MAXIMUM_CONCURRENT_COURSES_PER_STUDENT')->first()->value);
+        } catch (\Throwable $th) {
+            $configuredOverlays = 0;
+        }
+
+        if($configuredOverlays > 0){
+            $AND_where = $id ? "AND id <> $id" : "";
+
+            $subject = Subject::find($request->subject_id);
+
+            $numberOverlays = DB::select("SELECT COUNT(*) AS numberOverlays
+                                        FROM courses c
+                                            INNER JOIN subjects s ON c.subject_id = s.id
+                                        WHERE c.student_id = $request->student_id
+                                            AND s.start_date <= '$subject->finish_date'
+                                            AND s.finish_date >= '$subject->start_date'
+                                            AND c.deleted_at IS NULL
+                                            $AND_where;"
+                                        )[0]->numberOverlays;
+
+            $rst = ($numberOverlays >= $configuredOverlays) ? true : false;
+        }
+        else{
+            $rst = false;
+        }
+
+         return $rst;
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
@@ -55,24 +136,19 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-
-        //Validate duplicated
-        $duplicated = Course::where([
-            ['subject_id', $request->subject_id],
-            ['student_id', $request->student_id],
-        ])->get()->count();
-
-        if($duplicated > 0){
-            return back()->with('error', "Course already exists for this student")
-            ->withInput();
+        if($this->isAnInvalidPeriod($request)){
+            return back()->with('error', "The maximum number of concurrent courses for this student has been exceeded.")
+                ->withInput();
         }
 
-        $subject = Subject::find($request->subject_id);
+        if($this->isDuplicateForStudent($request)){
+            return back()->with('error', "Course already exists for this student.")
+                ->withInput();
+        }
 
-        //Validate the teacher can't be a student of the subject he teaches.
-        if($request->student_id == $subject->teacher_id){
+        if($this->isStudentTeacher($request)){
             return back()->with('error',"The teacher can't be a student of the subject he teaches.")
-            ->withInput();
+                ->withInput();
         }
 
         request()->validate(Course::$rules);
@@ -127,25 +203,19 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
-        //Validate duplicated
-        $duplicated = Course::where([
-            ['subject_id', $request->subject_id],
-            ['student_id', $request->student_id],
-            ['id', '!=', $course->id],
-        ])->get()->count();
-
-        if($duplicated > 0){
-            return back()->with('error', "Course already exists for this student")
-            ->withInput();
+        if($this->isAnInvalidPeriod($request, $course->id)){
+            return back()->with('error', "The maximum number of concurrent courses for this student has been exceeded.")
+                ->withInput();
         }
 
-        $subject = Subject::find($request->subject_id);
+        if($this->isDuplicateForStudent($request, $course->id)){
+            return back()->with('error', "Course already exists for this student")
+                ->withInput();
+        }
 
-        //Validate the teacher can't be a student of the subject he teaches.
-        if($request->student_id == $subject->teacher_id){
-            return redirect()->route('courses.create')
-            ->with('error', "The teacher can't be a student of the subject he teaches.")
-            ->withInput();
+        if($this->isStudentTeacher($request)){
+            return back()->with('error',"The teacher can't be a student of the subject he teaches.")
+                ->withInput();
         }
 
         request()->validate(Course::$rules);

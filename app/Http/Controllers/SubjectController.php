@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Models\Subject;
 use App\Models\User;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -15,56 +16,53 @@ use Illuminate\Support\Facades\DB;
  */
 class SubjectController extends Controller
 {
-    public function isMaxCourse(Request $request, Subject $subject = null){
-
-        $AND_where = $subject ? "AND s.id <> $subject->id" : '';
-
-        $sqlDateList = "SELECT s.start_date, s.finish_date
-                FROM subjects s
-                WHERE s.teacher_id = 1
-                    AND s.finish_date >= NOW()
-                    AND s.deleted_at IS NULL
-                    $AND_where;";
-
-        $dateList =  DB::select($sqlDateList);
-
-        $sqlSetting = "SELECT se.value
-                        FROM settings se
-                        WHERE se.name = 'MAXIMUM_COURSES_PER_TEACHER_WEEKLY'";
+    /**
+     * Validates the number of overlapping periods weekly.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  unsignedBigInteger $id
+     * @return boolean
+     */
+    private function isMaxCourse(Request $request, $id = null){
 
         try {
-            $maxCourses =  intval(DB::select($sqlSetting)[0]->value);
+            $maxConfiguredCourses = intval(Setting::where('name','MAXIMUM_COURSES_PER_TEACHER_WEEKLY')->first()->value);
         } catch (\Throwable $th) {
-            $maxCourses =  0;
+            $maxConfiguredCourses = 0;
         }
 
-        if(sizeof($dateList) > 0){
-            if ($maxCourses > 1){
-                $firstWeek=date('W',strtotime($request->start_date));
-                $lastWeek=date('W',strtotime($request->finish_date));
-                $arrayBase = array_keys(array_fill(($lastWeek<$firstWeek?$lastWeek:$firstWeek),abs($lastWeek-$firstWeek),'0'));
+        if($maxConfiguredCourses > 1){
 
-                foreach($dateList as $item){
-                    $firstWeek=date('W',strtotime($item->start_date));
-                    $lastWeek=date('W',strtotime($item->finish_date));
-                    $arrayAux = array_keys(array_fill(($lastWeek<$firstWeek?$lastWeek:$firstWeek),abs($lastWeek-$firstWeek),'0'));
+            $AND_where = $id ? "AND s.id <> $id" : '';
 
-                    $arrayBase = array_merge($arrayBase,$arrayAux);
-                }
+            $dateList =  DB::select("SELECT s.start_date, s.finish_date
+                                    FROM subjects s
+                                    WHERE s.teacher_id = 1
+                                        AND s.finish_date >= NOW()
+                                        AND s.deleted_at IS NULL
+                                        $AND_where;");
 
-                $arrayResult = array_count_values($arrayBase);
-                rsort($arrayResult);
+            $firstWeek=date('W',strtotime($request->start_date));
+            $lastWeek=date('W',strtotime($request->finish_date));
+            $arrayBase = array_keys(array_fill(($lastWeek<$firstWeek?$lastWeek:$firstWeek),abs($lastWeek-$firstWeek),'0'));
 
-                $rst = ($arrayResult[0] > $maxCourses) ? true : false;
+            foreach($dateList as $item){
+                $firstWeek=date('W',strtotime($item->start_date));
+                $lastWeek=date('W',strtotime($item->finish_date));
+                $arrayAux = array_keys(array_fill(($lastWeek<$firstWeek?$lastWeek:$firstWeek),abs($lastWeek-$firstWeek),'0'));
+
+                $arrayBase = array_merge($arrayBase,$arrayAux);
             }
 
-            else{
-                $rst = false;
-            }
+            $arrayResult = array_count_values($arrayBase);
+            rsort($arrayResult);
+
+            $rst = ($arrayResult[0] > $maxConfiguredCourses) ? true : false;
         }
         else{
             $rst = false;
         }
+
         return $rst;
     }
 
@@ -158,7 +156,7 @@ class SubjectController extends Controller
         $rules = Subject::$rules;
         $rules['slug'] = $rules['slug'] . ',slug,' . $subject->id;
 
-        if($this->isMaxCourse($request, $subject)){
+        if($this->isMaxCourse($request, $subject->id)){
             return back()->with('error', 'The date range entered exceeds the number of subjects per week allowed per teacher')
                     ->withInput();
         }

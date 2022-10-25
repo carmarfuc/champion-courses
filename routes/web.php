@@ -26,3 +26,10 @@ Route::resource('subjects', App\Http\Controllers\SubjectController::class)->midd
 Route::resource('courses', App\Http\Controllers\CourseController::class)->middleware('auth');
 Route::resource('payments', App\Http\Controllers\PaymentController::class)->middleware('auth');
 Route::resource('users', App\Http\Controllers\UserController::class)->middleware('auth');
+
+
+//Filters
+Route::get('users/filter/{filter}', [App\Http\Controllers\UserController::class, 'index'])->middleware('auth');
+Route::get('subjects/filter/{filter}', [App\Http\Controllers\SubjectController::class, 'index'])->middleware('auth');
+Route::get('payments/filter/{filter}', [App\Http\Controllers\PaymentController::class, 'index'])->middleware('auth');
+

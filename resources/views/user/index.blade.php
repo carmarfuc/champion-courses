@@ -5,15 +5,15 @@
 @endsection
 
 @section('content')
-    <div class="container-fluid">
+<div class="container">
         <div class="row">
-            <div class="col-sm-8 offset-sm-2">
+            <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('User') }}
+                                {{ $title }}
                             </span>
 
                              <div class="float-end">
@@ -28,6 +28,33 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
+
+                    <div class="row mt-5 ms-1 me-1">
+                        <div class="container overflow-hidden text-center">
+                            <div class="row gy-5">
+                                <div class="col-3">
+                                    <a href="/users/filter/administrator">
+                                        <div class="p-3 text-start text-white rounded-3 bg-success"><h4>👨🏼‍💻 <b>{{$admins}}</b> Admins </h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    <a href="/users/filter/teacher">
+                                        <div class="p-3 text-start text-white rounded-3 bg-primary"><h4>👨‍🏫 <b>{{$teachers}}</b> Teachers</h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    <a href="/users/filter/student">
+                                        <div class="p-3 text-start text-white rounded-3 bg-secondary"><h4>👨🏼‍🎓 <b>{{$students}}</b> Students</h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    <a href="/users">
+                                        <div class="p-3 text-start text-white rounded-3 bg-danger"><h4>🙎🏼‍♂️ <b>{{$usersActive}}</b> All</h4></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="card-body">
                         <div class="table-responsive">

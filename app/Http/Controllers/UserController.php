@@ -17,11 +17,21 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($filter = null)
     {
-        $users = User::paginate();
+        $users = $filter ? User::where('role', strtoupper($filter))->paginate() : User::paginate();
 
-        return view('user.index', compact('users'))
+        $title = $filter ? ucfirst($filter). 's' : "Users";
+
+        $students = User::where('role', 'STUDENT')->get()->count();
+
+        $teachers = User::where('role', 'TEACHER')->get()->count();
+
+        $admins = User::where('role', 'ADMINISTRATOR')->get()->count();
+
+        $usersActive = User::get()->count();
+
+        return view('user.index', compact('users', 'title', 'students', 'teachers', 'admins', 'usersActive'))
             ->with('i', (request()->input('page', 1) - 1) * $users->perPage());
     }
 

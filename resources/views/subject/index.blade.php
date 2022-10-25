@@ -13,7 +13,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Subject') }}
+                                {{ $title }}
                             </span>
 
                              <div class="float-end">
@@ -28,6 +28,28 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
+
+                    <div class="row mt-5 ms-1 me-1">
+                        <div class="container overflow-hidden text-center">
+                            <div class="row gy-5">
+                                <div class="col-4">
+                                    <a href="/subjects/filter/active">
+                                        <div class="p-3 text-start text-white rounded-3 bg-success"><h4>📖 <b>{{$subjectsActive}}</b> Active </h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-4">
+                                    <a href="/subjects/filter/inactive">
+                                        <div class="p-3 text-start text-white rounded-3 bg-danger"><h4>📕 <b>{{$subjectsInactive}}</b> Inactive</h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-4">
+                                    <a href="/subjects">
+                                        <div class="p-3 text-start text-white rounded-3 bg-secondary"><h4>📚 <b>{{$subjectsAll}}</b> All</h4></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="card-body">
                         <div class="table-responsive">

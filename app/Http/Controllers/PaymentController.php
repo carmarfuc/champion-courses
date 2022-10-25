@@ -17,11 +17,52 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($filter = null)
     {
-        $payments = Payment::orderBy('teacher_remuneration_payment_date', 'ASC')->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC')->paginate();
+        switch ($filter) {
+            case 'pending_payments':
+                $payments = Payment::whereNull('payment_date')
+                    ->orderBy('payment_date', 'ASC')
+                    ->orderBy('payment_date', 'ASC')
+                    ->orderBy('expiration_date', 'DESC');
+                $title = 'Pending Payments';
+                break;
 
-        return view('payment.index', compact('payments'))
+            case 'payments_paid':
+                $payments = Payment::whereNotNull('payment_date')
+                    ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                    ->orderBy('payment_date', 'ASC')
+                    ->orderBy('expiration_date', 'DESC');
+                $title = 'Payments Paid';
+                break;
+
+            case 'pending_remunerations':
+                $payments = Payment::whereNull('teacher_remuneration_payment_date')
+                    ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                    ->orderBy('payment_date', 'ASC')
+                    ->orderBy('expiration_date', 'DESC');
+                $title = 'Pending Remunerations';
+                break;
+
+            case 'remunerations_paid':
+                $payments = Payment::whereNotNull('teacher_remuneration_payment_date')->orderBy('teacher_remuneration_payment_date', 'ASC')->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                $title = 'Remunerations Paid';
+                break;
+
+            default:
+                $payments = Payment::orderBy('teacher_remuneration_payment_date', 'ASC')->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                $title = 'Payments';
+        }
+
+        $payments = $payments->paginate();
+
+        $pendingPayments = Payment::whereNull('payment_date')->get()->count();
+        $paymentsPaid = Payment::whereNotNull('payment_date')->get()->count();
+        $pendingRemunerations = Payment::whereNull('teacher_remuneration_payment_date')->get()->count();
+        $remunerationsPaid = Payment::whereNotNull('teacher_remuneration_payment_date')->get()->count();
+        $paymentsAll = Payment::get()->count();
+
+        return view('payment.index', compact('payments', 'title', 'pendingPayments', 'paymentsPaid', 'pendingRemunerations', 'remunerationsPaid', 'paymentsAll'))
             ->with('i', (request()->input('page', 1) - 1) * $payments->perPage());
     }
 

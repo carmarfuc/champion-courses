@@ -13,7 +13,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Payment') }}
+                                {{ $title }}
                             </span>
 
                              <div class="float-end">
@@ -28,6 +28,38 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
+
+                    <div class="row mt-5 ms-1 me-1">
+                        <div class="container overflow-hidden text-center">
+                            <div class="row gy-3">
+                                <div class="col-2">
+                                    <a href="/payments/filter/pending_payments">
+                                        <div class="p-3 text-start text-white rounded-3 bg-primary"><h4>💸 <b>{{$pendingPayments}}</b> Pending Payments </h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-2">
+                                    <a href="/payments/filter/payments_paid">
+                                        <div class="p-3 text-start text-white rounded-3 bg-success"><h4>💵 <b>{{$paymentsPaid}}</b> Payments Paid</h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    <a href="/payments/filter/pending_remunerations">
+                                        <div class="p-3 text-start text-white rounded-3 bg-primary"><h4>💸 <b>{{$pendingRemunerations}}</b> Pending Remunerations</h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    <a href="/payments/filter/remunerations_paid">
+                                        <div class="p-3 text-start text-white rounded-3 bg-success"><h4>💵 <b>{{$remunerationsPaid}}</b> Remunerations Paid</h4></div>
+                                    </a>
+                                </div>
+                                <div class="col-2">
+                                    <a href="/payments">
+                                        <div class="p-3 text-start text-white rounded-3 bg-secondary"><h4>💰 <b>{{$paymentsAll}}</b> All</h4></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="card-body">
                         <div class="table-responsive">
@@ -64,7 +96,7 @@
 											<td>$ {{ @money($payment->teacher_remuneration) }}</td>
                                             <td>
                                                 @if ($payment->teacher_remuneration_payment_date)
-                                                    <span class="badge text-bg-success">CHARGED ({{ $payment->teacher_remuneration_payment_date }})</span>
+                                                    <span class="badge text-bg-success">PAID ({{ $payment->teacher_remuneration_payment_date }})</span>
                                                 @else
                                                     <span class="badge text-bg-primary">PENDING</span>
                                                 @endif

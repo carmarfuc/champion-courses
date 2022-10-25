@@ -33,6 +33,8 @@ class HomeController extends Controller
 
         $studentsInCourses = Course::groupBy('student_id')->select('student_id')->get()->count();
 
+        $subjectCourses = Course::groupBy('subject_id')->select('subject_id')->get()->count();
+
         $paymentsPaid = Payment::whereNotNull('payment_date')->get()->count();
 
         $pendingPayments = Payment::whereNull('payment_date')->get()->count();
@@ -43,6 +45,8 @@ class HomeController extends Controller
 
         $usersActive = User::get()->count();
 
+        $subjectsActive = Subject::where('status', 'ACTIVE')->get()->count();
+
         return view('home', compact(
                 'students',
                 'teachers',
@@ -52,6 +56,8 @@ class HomeController extends Controller
                 'pendingRemunerations',
                 'remunerationsPaid',
                 'usersActive',
+                'subjectCourses',
+                'subjectsActive',
             )
         );
     }

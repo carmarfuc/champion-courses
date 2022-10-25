@@ -72,11 +72,19 @@ class SubjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($filter = null)
     {
-        $subjects = Subject::paginate();
+        $subjects = $filter ? Subject::where('status', strtoupper($filter))->paginate() : Subject::paginate();
 
-        return view('subject.index', compact('subjects'))
+        $title = "Subjects " . $filter ;
+
+        $subjectsActive = Subject::where('status', 'ACTIVE')->get()->count();
+
+        $subjectsInactive = Subject::where('status', 'INACTIVE')->get()->count();
+
+        $subjectsAll = Subject::get()->count();
+
+        return view('subject.index', compact('subjects', 'title', 'subjectsActive', 'subjectsInactive', 'subjectsAll'))
             ->with('i', (request()->input('page', 1) - 1) * $subjects->perPage());
     }
 

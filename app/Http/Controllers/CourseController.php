@@ -20,11 +20,30 @@ class CourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($object = null, $id = null)
     {
-        $courses = Course::paginate();
 
-        return view('course.index', compact('courses'))
+        $courses = (($object == 'student' || $object == 'subject') && $id)
+            ? Course::where($object.'_id', $id)->orderBy('created_at', 'DESC')->orderBy('final_score', 'ASC')->paginate()
+            : Course::orderBy('created_at', 'DESC')->orderBy('final_score', 'ASC')->paginate();
+
+        if ($object == 'subject'){
+            $title = 'Students in Course';
+            $all = false;
+        }
+        elseif ($object == 'student'){
+            $title = 'Student Courses';
+            $all = false;
+        }
+        else{
+            $title = 'Courses';
+            $all = true;
+        }
+
+        $count = $courses->count();
+
+
+        return view('course.index', compact('courses', 'title', 'count', 'all'))
             ->with('i', (request()->input('page', 1) - 1) * $courses->perPage());
     }
 
@@ -61,13 +80,13 @@ class CourseController extends Controller
             $duplicated = Course::where([
                 ['subject_id', $request->subject_id],
                 ['student_id', $request->student_id],
+                ['id', '<>', $id],
             ])->get()->count();
         }
         else{
             $duplicated = Course::where([
                 ['subject_id', $request->subject_id],
                 ['student_id', $request->student_id],
-                ['id', '!=', $id],
             ])->get()->count();
         }
 
@@ -105,7 +124,7 @@ class CourseController extends Controller
         }
 
         if($configuredOverlays > 0){
-            $AND_where = $id ? "AND id <> $id" : "";
+            $AND_where = $id ? "AND c.id <> $id" : "";
 
             $subject = Subject::find($request->subject_id);
 

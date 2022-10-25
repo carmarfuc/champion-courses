@@ -13,11 +13,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Course') }}
+                                <b>#{{$count}}</b> {{ $title }}
                             </span>
 
                              <div class="float-end">
-                                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
+                                @if(!$all)<a href="/courses" class="btn btn-secondary btn-sm">Show all records</a> @endif
+                                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm"  data-placement="left">
                                   {{ __('Create New') }}
                                 </a>
                               </div>
@@ -48,9 +49,15 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
 
-                                            <td>{{ $course->user->name }}</td>
-											<td><b>{{ $course->subject->name }}</b>
-                                                <small class="text-muted">by {{$course->subject->user->name}} <i>({{$course->subject->start_date}} | {{$course->subject->finish_date}})</i></small>
+                                            <td>
+                                                <a href="/courses/filter/student/{{$course->student_id}}">
+                                                    {{ $course->user->name }}</td>
+                                                </a>
+											<td>
+                                                <a href="/courses/filter/subject/{{$course->subject_id}}">
+                                                    <b>{{ $course->subject->name }}</b>
+                                                    <small class="text-muted"> by {{$course->subject->user->name}} <i>({{$course->subject->start_date}} | {{$course->subject->finish_date}})</i></small>
+                                                </a>
                                             </td>
 											<td>{{ $course->final_score }}</td>
 

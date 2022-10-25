@@ -32,4 +32,5 @@ Route::resource('users', App\Http\Controllers\UserController::class)->middleware
 Route::get('users/filter/{filter}', [App\Http\Controllers\UserController::class, 'index'])->middleware('auth');
 Route::get('subjects/filter/{filter}', [App\Http\Controllers\SubjectController::class, 'index'])->middleware('auth');
 Route::get('payments/filter/{filter}', [App\Http\Controllers\PaymentController::class, 'index'])->middleware('auth');
+Route::get('courses/filter/{object}/{id}', [App\Http\Controllers\CourseController::class, 'index'])->middleware('auth');
 

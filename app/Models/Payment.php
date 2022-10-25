@@ -29,11 +29,11 @@ class Payment extends Model
 
     static $rules = [
 		'expiration_date' => 'required|date',
-		'status' => 'required|in:PENDING,PAID',
-		'amount' => 'required|double',
-		'teacher_remuneration' => 'required|double',
+        'payment_date' => 'nullable|date',
+		'amount' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+		'teacher_remuneration' => 'required|regex:/^\d+(\.\d{1,2})?$/',
 		'course_id' => 'required|numeric',
-        'remuneration_status' => 'required|in:PENDING,CHARGED',
+        'teacher_remuneration_payment_date' => 'nullable|date',
     ];
 
     protected $perPage = 20;
@@ -43,7 +43,7 @@ class Payment extends Model
      *
      * @var array
      */
-    protected $fillable = ['expiration_date','payment_date','status','amount','teacher_remuneration','course_id'];
+    protected $fillable = ['expiration_date','payment_date','teacher_remuneration_payment_date','amount','teacher_remuneration','course_id'];
 
 
     /**

@@ -7,7 +7,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-8 offset-sm-2">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -34,16 +34,17 @@
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
-                                        <th>No</th>
+                                        <th>#</th>
 
 										<th>Expiration Date</th>
 										<th>Payment Date</th>
-										<th>Status</th>
 										<th>Amount</th>
 										<th>Teacher Remuneration</th>
-										<th>Course Id</th>
+                                        <th>Teacher Remuneration Payment Date</th>
+										<th>Student</th>
+                                        <th>Subject</th>
 
-                                        <th></th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -52,20 +53,28 @@
                                             <td>{{ ++$i }}</td>
 
 											<td>{{ $payment->expiration_date }}</td>
-											<td>{{ $payment->payment_date }}</td>
-											<td>{{ $payment->status }}</td>
-											<td>{{ $payment->amount }}</td>
-											<td>{{ $payment->teacher_remuneration }}</td>
-											<td>{{ $payment->course_id }}</td>
+											<td>
+                                                @if ($payment->payment_date)
+                                                    <span class="badge text-bg-success">PAID ({{$payment->payment_date}})</span>
+                                                @else
+                                                    <span class="badge text-bg-primary">PENDING</span>
+                                                @endif
+                                            </td>
+											<td>$ {{ @money($payment->amount) }}</td>
+											<td>$ {{ @money($payment->teacher_remuneration) }}</td>
+                                            <td>
+                                                @if ($payment->teacher_remuneration_payment_date)
+                                                    <span class="badge text-bg-success">CHARGED ({{ $payment->teacher_remuneration_payment_date }})</span>
+                                                @else
+                                                    <span class="badge text-bg-primary">PENDING</span>
+                                                @endif
+                                            </td>
+											<td>{{ $payment->course->user->name }}</td>
+                                            <td><b>{{ $payment->course->subject->name }}</b> <small class="text-muted">by {{$payment->course->subject->user->name}} <i>({{$payment->course->subject->start_date}} | {{$payment->course->subject->finish_date}})</i></small></td>
 
                                             <td>
-                                                <form action="{{ route('payments.destroy',$payment->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('payments.show',$payment->id) }}"><i class="fa fa-fw fa-eye"></i> Show</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('payments.edit',$payment->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Delete</button>
-                                                </form>
+                                                <a class="btn btn-sm btn-success" href="{{ route('payments.edit',$payment->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$payment->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -78,4 +87,10 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+
+    @include('payment/inc/scripts')
+
 @endsection

@@ -129,6 +129,53 @@ class CourseController extends Controller
     }
 
     /**
+     * Get SQL insert payments.
+     *
+     * @param  unsignedBigInteger $subject_id
+     * @param  unsignedBigInteger $course_id
+     * @return String
+     */
+    private function getSQLPaymentsInserts($subject_id, $course_id){
+        try {
+            $paymentDueDay = Setting::where('name','PAYMENT_DUE_DATE_NUMBER')->first()->value;
+            $paymentDueDay = ($paymentDueDay > 28) ? "10" : str_pad($paymentDueDay, 2, "0", STR_PAD_LEFT);
+        } catch (\Throwable $th) {
+            $paymentDueDay = "10";
+        }
+
+        try {
+            $teacherRemunerationPercentage = intval(Setting::where('name','TEACHER_REMUNERATION_PERCENTAGE')->first()->value)/100;
+        } catch (\Throwable $th) {
+            $teacherRemunerationPercentage = 0;
+        }
+
+        $subject = Subject::find($subject_id)
+                            ->selectRaw('ROUND(TIMESTAMPDIFF(DAY, start_date, finish_date)/30) AS months, start_date, monthly_price')
+                            ->first();
+
+        $sql = "INSERT INTO payments (expiration_date, amount, teacher_remuneration, course_id) VALUES ";
+
+        for ($i=0; $i < intval($subject->months) ; $i++) {
+
+            $startDate = date('Y-m-d', strtotime("+$i months", strtotime($subject->start_date)));
+
+            $year = date("Y",strtotime($startDate));
+            $month = date("m",strtotime($startDate));
+            $day = $paymentDueDay;
+
+            $expirationDate = "$year-$month-$day";
+            $monthlyPrice = $subject->monthly_price;
+            $teacherRemuneration = $monthlyPrice * $teacherRemunerationPercentage;
+
+            $sql.= "('$expirationDate', $subject->monthly_price, $teacherRemuneration, $course_id), ";
+        }
+
+        $sql = substr_replace($sql, "", -2) . ";";
+
+        return $sql;
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
@@ -136,27 +183,48 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
+
         if($this->isAnInvalidPeriod($request)){
             return back()->with('error', "The maximum number of concurrent courses for this student has been exceeded.")
-                ->withInput();
+            ->withInput();
         }
 
         if($this->isDuplicateForStudent($request)){
             return back()->with('error', "Course already exists for this student.")
-                ->withInput();
+            ->withInput();
         }
 
         if($this->isStudentTeacher($request)){
             return back()->with('error',"The teacher can't be a student of the subject he teaches.")
-                ->withInput();
+            ->withInput();
         }
 
         request()->validate(Course::$rules);
 
-        $course = Course::create($request->all());
+        $data = $request->all();
 
-        return redirect()->route('courses.index')
+        try {
+            //DB::connection()->pdo->beginTransaction();
+
+            $course_id = Course::create($data)->id;
+
+            $sqlCreatePayments = $this->getSQLPaymentsInserts($data['subject_id'], $course_id);
+
+            DB::insert($sqlCreatePayments);
+
+            //DB::connection()->pdo->commit();
+
+            return redirect()->route('courses.index')
             ->with('success', 'Course created successfully.');
+
+        } catch (\PDOException $e) {
+            // Woopsy
+            //DB::connection()->pdo->rollBack();
+
+            return back()->with('error',"An error occurred while trying to save the records.")
+                    ->withInput();
+        }
+
     }
 
     /**

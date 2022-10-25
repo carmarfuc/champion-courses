@@ -33,7 +33,12 @@ class PaymentController extends Controller
     public function create()
     {
         $payment = new Payment();
-        $courses = Course::pluck('name', 'id');
+        $courses = Course::join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                        ->join('users AS teachers', 'subjects.teacher_id', '=', 'teachers.id')
+                        ->join('users AS students', 'courses.student_id', '=', 'students.id')
+                        ->selectRaw("courses.id, CONCAT(students.name, ' IN ', subjects.name, ' BY ', teachers.name, ' (', subjects.start_date, ' | ', subjects.finish_date, ')') AS name")
+                        ->get()->pluck('name', 'id');
+
         return view('payment.create', compact('payment', 'courses'));
     }
 
@@ -45,6 +50,11 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->teacher_remuneration_payment_date && !$request->payment_date){
+            return back()->with('error', "If there is a data in the field teacher remuneration payment date, there must be a data in the field payment date.")
+                ->withInput();
+        }
+
         request()->validate(Payment::$rules);
 
         $payment = Payment::create($request->all());
@@ -75,8 +85,12 @@ class PaymentController extends Controller
     public function edit($id)
     {
         $payment = Payment::find($id);
-        $courses = Course::pluck('alias', 'id');
-        //$ProjectManagers = Employees::where('designation', 1)->get()->pluck('full_name', 'id');
+        $courses = Course::join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                        ->join('users AS teachers', 'subjects.teacher_id', '=', 'teachers.id')
+                        ->join('users AS students', 'courses.student_id', '=', 'students.id')
+                        ->selectRaw("courses.id, CONCAT(students.name, ' IN ', subjects.name, ' BY ', teachers.name, ' (', subjects.start_date, ' | ', subjects.finish_date, ')') AS name")
+                        ->get()->pluck('name', 'id');
+
         return view('payment.edit', compact('payment', 'courses'));
     }
 
@@ -89,6 +103,11 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Payment $payment)
     {
+        if($request->teacher_remuneration_payment_date && !$request->payment_date){
+            return back()->with('error', "If there is a data in the field teacher remuneration payment date, there must be a data in the field payment date.")
+                ->withInput();
+        }
+
         request()->validate(Payment::$rules);
 
         $payment->update($request->all());

@@ -28,5 +28,9 @@ class SettingSeeder extends Seeder
             'name' => 'MAXIMUM_COURSES_PER_TEACHER_WEEKLY',
             'value' => '5',
         ]);
-    }
+
+        DB::table('settings')->insert([
+            'name' => 'PAYMENT_DUE_DATE_NUMBER',
+            'value' => '10',
+        ]);
 }

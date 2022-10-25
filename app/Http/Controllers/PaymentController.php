@@ -19,7 +19,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::paginate();
+        $payments = Payment::orderBy('teacher_remuneration_payment_date', 'ASC')->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC')->paginate();
 
         return view('payment.index', compact('payments'))
             ->with('i', (request()->input('page', 1) - 1) * $payments->perPage());

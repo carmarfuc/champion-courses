@@ -204,7 +204,7 @@ class CourseController extends Controller
         $data = $request->all();
 
         try {
-            //DB::connection()->pdo->beginTransaction();
+            DB::beginTransaction();
 
             $course_id = Course::create($data)->id;
 
@@ -212,14 +212,14 @@ class CourseController extends Controller
 
             DB::insert($sqlCreatePayments);
 
-            //DB::connection()->pdo->commit();
+            DB::commit();
 
             return redirect()->route('courses.index')
             ->with('success', 'Course created successfully.');
 
         } catch (\PDOException $e) {
             // Woopsy
-            //DB::connection()->pdo->rollBack();
+            DB::rollBack();
 
             return back()->with('error',"An error occurred while trying to save the records.")
                     ->withInput();

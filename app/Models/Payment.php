@@ -51,7 +51,7 @@ class Payment extends Model
      */
     public function course()
     {
-        return $this->hasOne('App\Models\Course', 'id', 'course_id');
+        return $this->hasOne('App\Models\Course', 'id', 'course_id')->withTrashed();
     }
 
 

@@ -272,6 +272,7 @@ class PaymentController extends Controller
                         ->join('users AS teachers', 'subjects.teacher_id', '=', 'teachers.id')
                         ->join('users AS students', 'courses.student_id', '=', 'students.id')
                         ->selectRaw("courses.id, CONCAT(students.name, ' IN ', subjects.name, ' BY ', teachers.name, ' (', subjects.start_date, ' | ', subjects.finish_date, ')') AS name")
+                        ->withTrashed()
                         ->get()->pluck('name', 'id');
 
         return view('payment.edit', compact('payment', 'courses'));

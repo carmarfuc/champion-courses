@@ -17,8 +17,9 @@
                             _token : "{{csrf_token()}}"
                         },
                     dataType: "json"
-                })
-                location.href=@if(empty(Request::get('page'))) "subjects" @else "subjects?page={{Request::get('page')}}" @endif
+                }).always( function() {
+                    location.href=@if(empty(Request::get('page'))) "subjects" @else "subjects?page={{Request::get('page')}}" @endif
+                });
             }
         })
     }

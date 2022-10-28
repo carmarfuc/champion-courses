@@ -108,7 +108,9 @@
                                             @if (Auth::user()->role == 'ADMINISTRATOR')
                                             <td>
                                                 <a class="btn btn-sm btn-success" href="{{ route('payments.edit',$payment->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$payment->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                @if (!$payment->payment_date)
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$payment->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                @endif
                                             </td>
                                             @endif
                                         </tr>

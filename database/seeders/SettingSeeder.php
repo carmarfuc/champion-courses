@@ -33,4 +33,5 @@ class SettingSeeder extends Seeder
             'name' => 'PAYMENT_DUE_DATE_NUMBER',
             'value' => '10',
         ]);
+    }
 }

@@ -15,13 +15,15 @@
                             <span id="card_title">
                                 <b>#{{$count}}</b> {{ $title }}
                             </span>
-                            @if (in_array(Auth::user()->role, ['ADMINISTRATOR', 'STUDENT']))
-                                <div class="float-end">
-                                    @if(!$all)<a href="/courses" class="btn btn-secondary btn-sm">Show all records</a> @endif
-                                    <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm"  data-placement="left">
-                                        {{ __('Create New') }}
-                                    </a>
-                                </div>
+                            @if($subjectsCount > 0)
+                                @if (in_array(Auth::user()->role, ['ADMINISTRATOR', 'STUDENT']))
+                                    <div class="float-end">
+                                        @if(!$all)<a href="/courses" class="btn btn-secondary btn-sm">Show all records</a> @endif
+                                        <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm"  data-placement="left">
+                                            {{ __('Create New') }}
+                                        </a>
+                                    </div>
+                                @endif
                             @endif
                         </div>
                     </div>

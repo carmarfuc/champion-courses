@@ -70,8 +70,9 @@ class CourseController extends Controller
 
         $count = $courses->count();
 
+        $subjectsCount = Subject::where('status', 'ACTIVE')->get()->count();
 
-        return view('course.index', compact('courses', 'title', 'count', 'all'))
+        return view('course.index', compact('courses', 'title', 'count', 'all', 'subjectsCount'))
             ->with('i', (request()->input('page', 1) - 1) * $courses->perPage());
     }
 
@@ -88,11 +89,15 @@ class CourseController extends Controller
             DB::select("SELECT s.id, CONCAT(s.name, ' by ', u.name, ' (', s.start_date, ' | ', s.finish_date, ')') AS name
                         FROM subjects s
                             INNER JOIN users u ON s.teacher_id = u.id
-                        WHERE s.start_date >= NOW() AND s.status = 'ACTIVE' AND s.deleted_at IS NULL;")
+                        WHERE s.finish_date > NOW() AND s.status = 'ACTIVE' AND s.deleted_at IS NULL;")
                         )->pluck('name', 'id');
+        $create = true;
 
-        $students = User::pluck('name', 'id');
-        return view('course.create', compact('course','subjects', 'students'));
+        $students = (Auth::user()->role == 'STUDENT')
+            ? User::where('id', Auth::id())->pluck('name', 'id')
+            : User::where('role', 'STUDENT')->pluck('name', 'id');
+
+        return view('course.create', compact('course','subjects', 'students', 'create'));
     }
 
     /**
@@ -230,6 +235,7 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
+        request()->validate(Course::$rules);
 
         if($this->isAnInvalidPeriod($request)){
             return back()->with('error', "The maximum number of concurrent courses for this student has been exceeded.")
@@ -246,7 +252,6 @@ class CourseController extends Controller
             ->withInput();
         }
 
-        request()->validate(Course::$rules);
 
         $data = $request->all();
 
@@ -305,7 +310,9 @@ class CourseController extends Controller
                         WHERE s.status = 'ACTIVE' AND s.deleted_at IS NULL;")
                         )->pluck('name', 'id');
 
-        $students = User::pluck('name', 'id');
+        $create = false;
+
+        $students = User::where('role', 'STUDENT')->pluck('name', 'id', 'create');
         return view('course.edit', compact('course','subjects', 'students'));
     }
 
@@ -327,12 +334,12 @@ class CourseController extends Controller
 
             if($this->isDuplicateForStudent($request, $course->id)){
                 return back()->with('error', "Course already exists for this student")
-                    ->withInput();
+                ->withInput();
             }
 
             if($this->isStudentTeacher($request)){
                 return back()->with('error',"The teacher can't be a student of the subject he teaches.")
-                    ->withInput();
+                ->withInput();
             }
         }
 

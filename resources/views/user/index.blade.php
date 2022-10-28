@@ -29,6 +29,11 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
+                    @if ($message = Session::get('error'))
+                        <div class="alert alert-danger">
+                            <p>{{ $message }}</p>
+                        </div>
+                    @endif
                     @if (Auth::user()->role == 'ADMINISTRATOR')
                     <div class="row mt-4 ms-1 me-1">
                         <div class="container overflow-hidden text-center">
@@ -77,7 +82,15 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
 
-											<td><a class="fw-bolder" href="courses/filter/student/{{$user->id}}" title="View this student's courses">{{ $user->name }}<a></td>
+											<td>
+                                                @if(Auth::user()->role != 'ADMINISTRATOR')
+                                                    <a class="fw-bolder" href="courses/filter/student/{{$user->id}}" title="View this student's courses">
+                                                        {{ $user->name }}
+                                                    <a>
+                                                @else
+                                                    {{ $user->name }}
+                                                @endif
+                                                </td>
 											<td>{{ $user->email }}</td>
                                             <td>
                                                 <span class="badge @if($user->role == 'STUDENT') text-bg-secondary @elseif($user->role == 'TEACHER') text-bg-primary @else text-bg-success @endif">

@@ -39,7 +39,7 @@ The user entity manages the roles of administrator, teacher and student.
 
 ![ERD](https://raw.githubusercontent.com/marcocajeao/champion-courses/master/public/MER_championCourses.png) 
 
-##Installation
+## Installation
 For the installation it's required to have *MySQL* and *Composer* installed on your system or some application that contains them such as *XAMPP*, *WAMP*, *Devilbox*, etc. Then you must follow the following steps:
 
 - Create the directory where the project will be stored with the following command:

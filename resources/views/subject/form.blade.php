@@ -33,7 +33,7 @@
                 {{ Form::text('monthly_price', $subject->monthly_price, ['value' => old('monthly_price'), 'class' => 'form-control' . ($errors->has('monthly_price') ? ' is-invalid' : ''), 'placeholder' => 'Monthly Price']) }}
                 {!! $errors->first('monthly_price', '<div class="invalid-feedback">:message</div>') !!}
             @else
-                <b>Monthly Price:</b> {{$subject->monthly_price}}
+                <b>Monthly Price:</b> $ {{ @money($subject->monthly_price) }}
             @endif
         </div>
         <div class="form-group mt-3">

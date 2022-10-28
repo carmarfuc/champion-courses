@@ -6,6 +6,7 @@ use App\Http\Requests\StoreSubjectRequest;
 use App\Models\Subject;
 use App\Models\User;
 use App\Models\Setting;
+use Courses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -75,6 +76,7 @@ class SubjectController extends Controller
      */
     public function index($filter = null)
     {
+        $title = "Subjects " . $filter ;
 
         if (Auth::user()->role == 'ADMINISTRATOR'){
             $subjects = $filter
@@ -103,8 +105,10 @@ class SubjectController extends Controller
             $subjectsInactive = Subject::where('teacher_id', Auth::id())->where('status', 'INACTIVE')->get()->count();
             $subjectsAll = Subject::where('teacher_id', Auth::id())->get()->count();
         }
+        else{
+            return abort('404');
+        }
 
-        $title = "Subjects " . $filter ;
 
         return view('subject.index', compact('subjects', 'title', 'subjectsActive', 'subjectsInactive', 'subjectsAll'))
             ->with('i', (request()->input('page', 1) - 1) * $subjects->perPage());

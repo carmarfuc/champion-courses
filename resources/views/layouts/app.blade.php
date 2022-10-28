@@ -51,6 +51,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('subjects.index') }}">{{ __('Subjects') }}</a>
                             </li>
+                        @endif
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('courses.index') }}">{{ __('Courses') }}</a>
                             </li>
@@ -62,7 +63,6 @@
                                     <a class="nav-link" href="{{ route('settings.index') }}">{{ __('Settings') }}</a>
                                 </li>
                             @endif
-                        @endif
                     </ul>
                     @endif
 

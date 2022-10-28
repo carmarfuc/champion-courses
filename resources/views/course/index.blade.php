@@ -15,7 +15,7 @@
                             <span id="card_title">
                                 <b>#{{$count}}</b> {{ $title }}
                             </span>
-                            @if (Auth::user()->role == 'ADMINISTRATOR')
+                            @if (in_array(Auth::user()->role, ['ADMINISTRATOR', 'STUDENT']))
                                 <div class="float-end">
                                     @if(!$all)<a href="/courses" class="btn btn-secondary btn-sm">Show all records</a> @endif
                                     <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm"  data-placement="left">
@@ -42,7 +42,9 @@
 										<th>Subject</th>
                                         <th>Final Score</th>
 
-                                        <th>Actions</th>
+                                        @if (in_array(Auth::user()->role, ['ADMINISTRATOR', 'TEACHER']))
+                                            <th>Actions</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -62,12 +64,14 @@
                                             </td>
 											<td>{{ $course->final_score }}</td>
 
-                                            <td>
-                                                <a class="btn btn-sm btn-success" href="{{ route('courses.edit',$course->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                @if (Auth::user()->role == 'ADMINISTRATOR')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$course->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
-                                                @endif
-                                            </td>
+                                            @if (in_array(Auth::user()->role, ['ADMINISTRATOR', 'TEACHER']))
+                                                <td>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('courses.edit',$course->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
+                                                    @endif
+                                                    @if (Auth::user()->role == 'ADMINISTRATOR')
+                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$course->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>

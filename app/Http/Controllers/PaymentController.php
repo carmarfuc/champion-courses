@@ -24,15 +24,25 @@ class PaymentController extends Controller
             case 'pending_payments':
                 if (Auth::user()->role == 'ADMINISTRATOR')
                     $payments = Payment::whereNull('payment_date')
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
                         ->orderBy('payment_date', 'ASC')
-                        ->orderBy('expiration_date', 'DESC');
+                        ->orderBy('expiration_date', 'ASC');
                 elseif (Auth::user()->role == 'TEACHER'){
                     $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
                         ->join('subjects', 'courses.subject_id', '=','subjects.id')
                         ->whereNull('payment_date')
                         ->where('subjects.teacher_id', Auth::id())
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
                         ->orderBy('payment_date', 'ASC')
-                        ->orderBy('expiration_date', 'DESC');
+                        ->orderBy('expiration_date', 'ASC');
+                }
+                elseif (Auth::user()->role == 'STUDENT'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->whereNull('payment_date')
+                        ->where('courses.student_id', Auth::id())
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');
                 }
                 $title = 'Pending Payments';
                 break;
@@ -42,16 +52,25 @@ class PaymentController extends Controller
                     $payments = Payment::whereNotNull('payment_date')
                         ->orderBy('teacher_remuneration_payment_date', 'ASC')
                         ->orderBy('payment_date', 'ASC')
-                        ->orderBy('expiration_date', 'DESC');
+                        ->orderBy('expiration_date', 'ASC');
                 }
                 elseif (Auth::user()->role == 'TEACHER'){
                     $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
                         ->join('subjects', 'courses.subject_id', '=','subjects.id')
                         ->whereNotNull('payment_date')
                         ->where('subjects.teacher_id', Auth::id())
+                        ->orderBy('expiration_date', 'ASC')
                         ->orderBy('teacher_remuneration_payment_date', 'ASC')
                         ->orderBy('payment_date', 'ASC')
-                        ->orderBy('expiration_date', 'DESC');
+                        ->orderBy('expiration_date', 'ASC');
+                }
+                elseif (Auth::user()->role == 'STUDENT'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->whereNotNull('payment_date')
+                        ->where('courses.student_id', Auth::id())
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');
                 }
                 $title = 'Payments Paid';
                 break;
@@ -61,7 +80,7 @@ class PaymentController extends Controller
                     $payments = Payment::whereNull('teacher_remuneration_payment_date')
                         ->orderBy('teacher_remuneration_payment_date', 'ASC')
                         ->orderBy('payment_date', 'ASC')
-                        ->orderBy('expiration_date', 'DESC');
+                        ->orderBy('expiration_date', 'ASC');
 
                 }
                 elseif (Auth::user()->role == 'TEACHER'){
@@ -71,7 +90,16 @@ class PaymentController extends Controller
                         ->where('subjects.teacher_id', Auth::id())
                         ->orderBy('teacher_remuneration_payment_date', 'ASC')
                         ->orderBy('payment_date', 'ASC')
-                        ->orderBy('expiration_date', 'DESC');
+                        ->orderBy('expiration_date', 'ASC');
+
+                }
+                elseif (Auth::user()->role == 'STUDENT'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->whereNull('teacher_remuneration_payment_date')
+                        ->where('courses.student_id', Auth::id())
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');
 
                 }
                 $title = 'Pending Remunerations';
@@ -81,7 +109,8 @@ class PaymentController extends Controller
                 if (Auth::user()->role == 'ADMINISTRATOR'){
                     $payments = Payment::whereNotNull('teacher_remuneration_payment_date')
                         ->orderBy('teacher_remuneration_payment_date', 'ASC')
-                        ->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');;
                 }
                 elseif (Auth::user()->role == 'TEACHER'){
                     $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
@@ -89,7 +118,16 @@ class PaymentController extends Controller
                         ->where('subjects.teacher_id', Auth::id())
                         ->whereNotNull('teacher_remuneration_payment_date')
                         ->orderBy('teacher_remuneration_payment_date', 'ASC')
-                        ->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');;
+                }
+                elseif (Auth::user()->role == 'STUDENT'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->where('courses.student_id', Auth::id())
+                        ->whereNotNull('teacher_remuneration_payment_date')
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');;
                 }
                 $title = 'Remunerations Paid';
                 break;
@@ -97,14 +135,22 @@ class PaymentController extends Controller
             default:
                 if (Auth::user()->role == 'ADMINISTRATOR'){
                     $payments = Payment::orderBy('teacher_remuneration_payment_date', 'ASC')
-                        ->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');
                 }
                 elseif (Auth::user()->role == 'TEACHER'){
                     $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
                         ->join('subjects', 'courses.subject_id', '=','subjects.id')
                         ->where('subjects.teacher_id', Auth::id())
                         ->orderBy('teacher_remuneration_payment_date', 'ASC')
-                        ->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');
+                }
+                elseif (Auth::user()->role == 'STUDENT'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->where('courses.student_id', Auth::id())
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'ASC');
                 }
                 $title = 'Payments';
         }
@@ -140,7 +186,24 @@ class PaymentController extends Controller
                 ->where('subjects.teacher_id', Auth::id())
                 ->get()->count();
         }
-        
+        elseif (Auth::user()->role == 'STUDENT'){
+            $pendingPayments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->where('courses.student_id', Auth::id())
+                ->whereNull('payment_date')->get()->count();
+            $paymentsPaid = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->where('courses.student_id', Auth::id())
+                ->whereNotNull('payment_date')->get()->count();
+            $pendingRemunerations = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->where('courses.student_id', Auth::id())
+                ->whereNull('teacher_remuneration_payment_date')->get()->count();
+            $remunerationsPaid = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->where('courses.student_id', Auth::id())
+                ->whereNotNull('teacher_remuneration_payment_date')->get()->count();
+            $paymentsAll = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->where('courses.student_id', Auth::id())
+                ->get()->count();
+        }
+
         return view('payment.index', compact('payments', 'title', 'pendingPayments', 'paymentsPaid', 'pendingRemunerations', 'remunerationsPaid', 'paymentsAll'))
             ->with('i', (request()->input('page', 1) - 1) * $payments->perPage());
     }

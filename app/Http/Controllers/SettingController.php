@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -21,10 +22,15 @@ class SettingController extends Controller
      */
     public function index()
     {
-        $settings = Setting::paginate();
+        if(Auth::user()->role == 'ADMINISTRATOR'){
+            $settings = Setting::paginate();
 
-        return view('setting.index', compact('settings'))
-            ->with('i', (request()->input('page', 1) - 1) * $settings->perPage());
+            return view('setting.index', compact('settings'))
+                ->with('i', (request()->input('page', 1) - 1) * $settings->perPage());
+        }
+        else{
+            return abort('404');
+        }
     }
 
     /**

@@ -67,7 +67,7 @@ class HomeController extends Controller
                 $subjectsInProgress = DB::select("SELECT COUNT(DISTINCT c.subject_id) AS subProgress
                                                     FROM courses c
                                                         INNER JOIN subjects s on c.subject_id = s.id
-                                                    WHERE s.teacher_id = 6
+                                                    WHERE s.teacher_id = $id
                                                         AND CURRENT_DATE() BETWEEN s.start_date AND s.finish_date
                                                         AND c.deleted_at IS NULL
                                                         AND s.deleted_at IS NULL")[0]->subProgress;
@@ -80,7 +80,7 @@ class HomeController extends Controller
                     ->where('status', 'ACTIVE')
                     ->get()->count();
 
-                $remunerationCurrentMonth = DB::select("SELECT SUM(p.teacher_remuneration) as rem
+                $remunerationCurrentMonth = DB::select("SELECT IFNULL(SUM(p.teacher_remuneration), 0) as rem
                                                         FROM courses c
                                                             INNER JOIN payments p on c.id = p.course_id
                                                             INNER JOIN subjects s on c.subject_id = s.id
@@ -91,7 +91,7 @@ class HomeController extends Controller
                                                             AND s.deleted_at IS NULL
                                                             AND p.deleted_at IS NULL")[0]->rem;
 
-                $remunerationBalance = DB::select("SELECT SUM(p.teacher_remuneration) as bal
+                $remunerationBalance = DB::select("SELECT IFNULL(SUM(p.teacher_remuneration), 0) as bal
                                                     FROM courses c
                                                         INNER JOIN payments p on c.id = p.course_id
                                                         INNER JOIN subjects s on c.subject_id = s.id
@@ -111,16 +111,18 @@ class HomeController extends Controller
                 break;
 
             case 'STUDENT':
-                $dueDateNext = Payment::join('courses', 'courses.student_id', '=', 'payments.courses_id')
+                $dueDateNext = Payment::join('courses', 'courses.id', '=', 'payments.course_id')
                     ->where('courses.student_id', $id)
                     ->whereNull('payments.payment_date')
                     ->orderBy('payments.payment_date', 'ASC')
-                    ->first()->expiration_date;
+                    ->first();
 
-                $currenMonthDebt = DB::select("SELECT SUM(p.amount) as debt
+                $dueDateNext = isset($dueDateNext->expiration_date) ? $dueDateNext->expiration_date : 'No';
+
+                $currentMonthDebt = DB::select("SELECT IFNULL(SUM(p.amount), 0) AS debt
                                                 FROM courses c
-                                                    INNER JOIN payments p on c.id = p.course_id
-                                                    INNER JOIN subjects s on c.subject_id = s.id
+                                                    INNER JOIN payments p ON c.id = p.course_id
+                                                    INNER JOIN subjects s ON c.subject_id = s.id
                                                 WHERE c.student_id = $id
                                                     AND YEAR(p.expiration_date) = YEAR(CURRENT_DATE())
                                                     AND MONTH(p.expiration_date) = MONTH(CURRENT_DATE())
@@ -129,15 +131,15 @@ class HomeController extends Controller
                                                     AND s.deleted_at IS NULL
                                                     AND p.deleted_at IS NULL")[0]->debt;
 
-                $totalDebt = DB::select("SELECT SUM(p.amount) as debt
-                                                FROM courses c
-                                                    INNER JOIN payments p on c.id = p.course_id
-                                                    INNER JOIN subjects s on c.subject_id = s.id
-                                                WHERE c.student_id = $id
-                                                    AND p.payment_date IS NULL
-                                                    AND c.deleted_at IS NULL
-                                                    AND s.deleted_at IS NULL
-                                                    AND p.deleted_at IS NULL")[0]->debt;
+                $totalDebt = DB::select("SELECT IFNULL(SUM(p.amount), 0) AS debt
+                                            FROM courses c
+                                                INNER JOIN payments p ON c.id = p.course_id
+                                                INNER JOIN subjects s ON c.subject_id = s.id
+                                            WHERE c.student_id = $id
+                                                AND p.payment_date IS NULL
+                                                AND c.deleted_at IS NULL
+                                                AND s.deleted_at IS NULL
+                                                AND p.deleted_at IS NULL")[0]->debt;
 
                 $subjectsInProgress = Course::join('subjects', 'courses.subject_id', '=', 'subjects.id')
                     ->where('student_id', $id)

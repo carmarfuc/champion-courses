@@ -37,7 +37,7 @@ class UserController extends Controller
             return view('user.index', compact('users', 'title', 'students', 'teachers', 'admins', 'usersActive'))
                 ->with('i', (request()->input('page', 1) - 1) * $users->perPage());
         }
-        else{
+        elseif (Auth::user()->role == 'TEACHER'){
             //List
             $users = User::join('courses', 'courses.student_id', '=', 'users.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
@@ -50,6 +50,9 @@ class UserController extends Controller
 
             return view('user.index', compact('users', 'title'))
                 ->with('i', (request()->input('page', 1) - 1) * $users->perPage());
+        }
+        else{
+            return abort('404');
         }
     }
 

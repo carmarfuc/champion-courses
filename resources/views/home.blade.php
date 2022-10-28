@@ -83,26 +83,26 @@
                                     </div>
                                     <div class="col-6">
                                         <a href="/payments">
-                                            <div class="p-3 text-start text-white rounded-3 bg-success"><h3>💵 <b>$ {{$remunerationCurrentMonth}}</b> Remuneration for the Current Month</h3></div>
+                                            <div class="p-3 text-start text-white rounded-3 bg-success"><h3>💵 <b>$ {{ @money($remunerationCurrentMonth) }}</b> Remuneration for the Current Month</h3></div>
                                         </a>
                                     </div>
                                     <div class="col-6">
                                         <a href="/payments">
-                                            <div class="p-3 text-start text-white rounded-3 bg-success"><h3>💰 <b>$ {{$remunerationBalance}}</b> Remuneration Balance</h3></div>
+                                            <div class="p-3 text-start text-white rounded-3 bg-success"><h3>💰 <b>$ {{ @money($remunerationBalance) }}</b> Remuneration Balance</h3></div>
                                         </a>
                                     </div>
                                 @elseif (Auth::user()->role == 'STUDENT')
-                                    <div class="col-4">
-                                        <a href="/subjects">
-                                            <div class="p-3 text-start text-white rounded-3 bg-success"><h3>📚 <b>{{$subjectsInProgress}}</b> Subjects in Progress</h3></div>
+                                    <div class="col-6">
+                                        <a href="/courses">
+                                            <div class="p-3 text-start text-white rounded-3 bg-success"><h3>📚 <b>{{$subjectsInProgress }}</b> Subjects in Progress</h3></div>
                                         </a>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <a href="/payments">
                                             <div class="p-3 text-start text-white rounded-3 bg-primary"><h3>📅 <b>{{$dueDateNext}}</b> Due Date Next</h3></div>
                                         </a>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <a href="/payments">
                                             <div class="p-3 text-start text-white rounded-3 bg-success"><h3>💵 <b>$ {{$currentMonthDebt}}</b> Current Month Debt</h3></div>
                                         </a>

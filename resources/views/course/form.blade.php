@@ -21,7 +21,7 @@
                 {{ Form::label('student') }}
                 {{ Form::select('student_id', $students, $course->student_id, ['value' => old('student_id'), 'class' => 'form-control' . ($errors->has('student_id') ? ' is-invalid' : ''), 'placeholder' => 'Select a Student']) }}
                 {!! $errors->first('student_id', '<div class="invalid-feedback">:message</div>') !!}
-            @elseif (Auth::user()->role == 'TEACHER')
+            @elseif (in_array(Auth::user()->role, ['TEACHER', 'STUDENT']))
                 <b>Student:</b> {{ $course->user->name }}
             @endif
         </div>

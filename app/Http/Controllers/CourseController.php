@@ -29,7 +29,7 @@ class CourseController extends Controller
                 ? Course::where($object.'_id', $id)->orderBy('created_at', 'DESC')->orderBy('final_score', 'ASC')->paginate()
                 : Course::orderBy('created_at', 'DESC')->orderBy('final_score', 'ASC')->paginate();
         }
-        else{
+        elseif (Auth::user()->role == 'TEACHER'){
             $courses = (($object == 'student' || $object == 'subject') && $id)
                 ? Course::join('subjects', 'subject_id', "=", 'subjects.id')
                     ->where($object.'_id', $id)
@@ -38,6 +38,18 @@ class CourseController extends Controller
                     ->orderBy('final_score', 'ASC')->paginate()
                 : Course::join('subjects', 'subject_id', "=", 'subjects.id')
                     ->where('teacher_id', Auth::id())
+                    ->orderBy('courses.created_at', 'DESC')
+                    ->orderBy('final_score', 'ASC')->paginate();
+        }
+        elseif (Auth::user()->role == 'STUDENT'){
+            $courses = (($object == 'student' || $object == 'subject') && $id)
+                ? Course::join('subjects', 'subject_id', "=", 'subjects.id')
+                    ->where($object.'_id', $id)
+                    ->where('student_id', Auth::id())
+                    ->orderBy('courses.created_at', 'DESC')
+                    ->orderBy('final_score', 'ASC')->paginate()
+                : Course::join('subjects', 'subject_id', "=", 'subjects.id')
+                    ->where('student_id', Auth::id())
                     ->orderBy('courses.created_at', 'DESC')
                     ->orderBy('final_score', 'ASC')->paginate();
         }

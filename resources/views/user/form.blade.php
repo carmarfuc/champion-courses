@@ -11,11 +11,13 @@
             {{ Form::text('email', $user->email, ['class' => 'form-control' . ($errors->has('email') ? ' is-invalid' : ''), 'placeholder' => 'Email']) }}
             {!! $errors->first('email', '<div class="invalid-feedback">:message</div>') !!}
         </div>
+        @if(Auth::user()->role == 'ADMINISTRATOR')
         <div class="form-group mt-3">
             {{ Form::label('role') }}
             {{ Form::select('role', ['ADMINISTRATOR' => 'ADMINISTRATOR', 'TEACHER' => 'TEACHER', 'STUDENT' => 'STUDENT'], $user->role, ['value' => old('role'), 'class' => 'form-control' . ($errors->has('role') ? ' is-invalid' : ''), 'placeholder' => 'Select a role']) }}
             {!! $errors->first('role', '<div class="invalid-feedback">:message</div>') !!}
         </div>
+        @endif
         @if($user->id)
             <button class="btn btn-primary mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResetPassword" aria-expanded="false" onclick="$('#password').val('');$('#password_confirm').val('');" >
                 Reset password

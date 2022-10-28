@@ -7,14 +7,23 @@
     <div class="box-body">
 
         <div class="form-group">
-            {{ Form::label('subject') }}
-            {{ Form::select('subject_id', $subjects, $course->subject_id, ['value' => old('subject_id'), 'class' => 'form-control' . ($errors->has('subject_id') ? ' is-invalid' : ''), 'placeholder' => 'Select a Subject']) }}
-            {!! $errors->first('subject_id', '<div class="invalid-feedback">:message</div>') !!}
+            @if (Auth::user()->role == 'ADMINISTRATOR')
+                {{ Form::label('subject') }}
+                {{ Form::select('subject_id', $subjects, $course->subject_id, ['value' => old('subject_id'), 'class' => 'form-control' . ($errors->has('subject_id') ? ' is-invalid' : ''), 'placeholder' => 'Select a Subject']) }}
+                {!! $errors->first('subject_id', '<div class="invalid-feedback">:message</div>') !!}
+            @elseif (Auth::user()->role == 'TEACHER')
+                <b>Course:</b> {{ $course->subject->name }}
+                <small class="text-muted"> by {{$course->subject->user->name}} <i>({{$course->subject->start_date}} | {{$course->subject->finish_date}})</i></small>
+            @endif
         </div>
         <div class="form-group mt-3">
-            {{ Form::label('student') }}
-            {{ Form::select('student_id', $students, $course->student_id, ['value' => old('student_id'), 'class' => 'form-control' . ($errors->has('student_id') ? ' is-invalid' : ''), 'placeholder' => 'Select a Student']) }}
-            {!! $errors->first('student_id', '<div class="invalid-feedback">:message</div>') !!}
+            @if (Auth::user()->role == 'ADMINISTRATOR')
+                {{ Form::label('student') }}
+                {{ Form::select('student_id', $students, $course->student_id, ['value' => old('student_id'), 'class' => 'form-control' . ($errors->has('student_id') ? ' is-invalid' : ''), 'placeholder' => 'Select a Student']) }}
+                {!! $errors->first('student_id', '<div class="invalid-feedback">:message</div>') !!}
+            @elseif (Auth::user()->role == 'TEACHER')
+                <b>Student:</b> {{ $course->user->name }}
+            @endif
         </div>
         @if(!empty($course->id))
         <div class="form-group mt-3">

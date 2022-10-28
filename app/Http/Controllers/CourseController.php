@@ -7,6 +7,7 @@ use App\Models\Subject;
 use App\Models\User;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,9 +24,24 @@ class CourseController extends Controller
     public function index($object = null, $id = null)
     {
 
-        $courses = (($object == 'student' || $object == 'subject') && $id)
-            ? Course::where($object.'_id', $id)->orderBy('created_at', 'DESC')->orderBy('final_score', 'ASC')->paginate()
-            : Course::orderBy('created_at', 'DESC')->orderBy('final_score', 'ASC')->paginate();
+        if (Auth::user()->role == 'ADMINISTRATOR'){
+            $courses = (($object == 'student' || $object == 'subject') && $id)
+                ? Course::where($object.'_id', $id)->orderBy('created_at', 'DESC')->orderBy('final_score', 'ASC')->paginate()
+                : Course::orderBy('created_at', 'DESC')->orderBy('final_score', 'ASC')->paginate();
+        }
+        else{
+            $courses = (($object == 'student' || $object == 'subject') && $id)
+                ? Course::join('subjects', 'subject_id', "=", 'subjects.id')
+                    ->where($object.'_id', $id)
+                    ->where('teacher_id', Auth::id())
+                    ->orderBy('courses.created_at', 'DESC')
+                    ->orderBy('final_score', 'ASC')->paginate()
+                : Course::join('subjects', 'subject_id', "=", 'subjects.id')
+                    ->where('teacher_id', Auth::id())
+                    ->orderBy('courses.created_at', 'DESC')
+                    ->orderBy('final_score', 'ASC')->paginate();
+        }
+
 
         if ($object == 'subject'){
             $title = 'Students in Course';
@@ -290,22 +306,32 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
-        if($this->isAnInvalidPeriod($request, $course->id)){
-            return back()->with('error', "The maximum number of concurrent courses for this student has been exceeded.")
-                ->withInput();
+
+        if(Auth::user()->role == 'ADMINISTRATOR'){
+            if($this->isAnInvalidPeriod($request, $course->id)){
+                return back()->with('error', "The maximum number of concurrent courses for this student has been exceeded.")
+                    ->withInput();
+            }
+
+            if($this->isDuplicateForStudent($request, $course->id)){
+                return back()->with('error', "Course already exists for this student")
+                    ->withInput();
+            }
+
+            if($this->isStudentTeacher($request)){
+                return back()->with('error',"The teacher can't be a student of the subject he teaches.")
+                    ->withInput();
+            }
         }
 
-        if($this->isDuplicateForStudent($request, $course->id)){
-            return back()->with('error', "Course already exists for this student")
-                ->withInput();
+        $rules = Course::$rules;
+
+        if(!isset($request->student_id) && !isset($request->subject_id)){
+            unset($rules['student_id']);
+            unset($rules['subject_id']);
         }
 
-        if($this->isStudentTeacher($request)){
-            return back()->with('error',"The teacher can't be a student of the subject he teaches.")
-                ->withInput();
-        }
-
-        request()->validate(Course::$rules);
+        request()->validate($rules);
 
         $course->update($request->all());
 

@@ -7,6 +7,8 @@ use App\Models\Course;
 use App\Models\Subject;
 use App\Models\Payment;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -27,38 +29,136 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $students = User::where('role', 'STUDENT')->get()->count();
+        return view('home', $this->getVars(Auth::user()->role, Auth::id()));
+    }
 
-        $teachers = User::where('role', 'TEACHER')->get()->count();
 
-        $studentsInCourses = Course::groupBy('student_id')->select('student_id')->get()->count();
 
-        $subjectCourses = Course::groupBy('subject_id')->select('subject_id')->get()->count();
+    private function getVars($role, $id){
 
-        $paymentsPaid = Payment::whereNotNull('payment_date')->get()->count();
+        switch ($role) {
+            case 'ADMINISTRATOR':
+                $students = User::where('role', 'STUDENT')->get()->count();
+                $teachers = User::where('role', 'TEACHER')->get()->count();
+                $studentsInCourses = Course::groupBy('student_id')->select('student_id')->get()->count();
+                $subjectCourses = Course::groupBy('subject_id')->select('subject_id')->get()->count();
+                $paymentsPaid = Payment::whereNotNull('payment_date')->get()->count();
+                $pendingPayments = Payment::whereNull('payment_date')->get()->count();
+                $remunerationsPaid = Payment::whereNotNull('teacher_remuneration_payment_date')->get()->count();
+                $pendingRemunerations = Payment::whereNull('teacher_remuneration_payment_date')->get()->count();
+                $usersActive = User::get()->count();
+                $subjectsActive = Subject::where('status', 'ACTIVE')->get()->count();
 
-        $pendingPayments = Payment::whereNull('payment_date')->get()->count();
+                $rst = compact(
+                    'students',
+                    'teachers',
+                    'studentsInCourses',
+                    'paymentsPaid',
+                    'pendingPayments',
+                    'pendingRemunerations',
+                    'remunerationsPaid',
+                    'usersActive',
+                    'subjectCourses',
+                    'subjectsActive',
+                );
+                break;
 
-        $remunerationsPaid = Payment::whereNotNull('teacher_remuneration_payment_date')->get()->count();
+            case 'TEACHER':
+                $subjectsInProgress = DB::select("SELECT COUNT(DISTINCT c.subject_id) AS subProgress
+                                                    FROM courses c
+                                                        INNER JOIN subjects s on c.subject_id = s.id
+                                                    WHERE s.teacher_id = 6
+                                                        AND CURRENT_DATE() BETWEEN s.start_date AND s.finish_date
+                                                        AND c.deleted_at IS NULL
+                                                        AND s.deleted_at IS NULL")[0]->subProgress;
 
-        $pendingRemunerations = Payment::whereNull('teacher_remuneration_payment_date')->get()->count();
+                $currentStudents = Course::join('users', 'courses.student_id', '=', 'users.id')
+                    ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                    ->where('teacher_id', $id)
+                    ->where('start_date', '<=', now())
+                    ->where('finish_date', '>=', now())
+                    ->where('status', 'ACTIVE')
+                    ->get()->count();
 
-        $usersActive = User::get()->count();
+                $remunerationCurrentMonth = DB::select("SELECT SUM(p.teacher_remuneration) as rem
+                                                        FROM courses c
+                                                            INNER JOIN payments p on c.id = p.course_id
+                                                            INNER JOIN subjects s on c.subject_id = s.id
+                                                        WHERE s.teacher_id = $id
+                                                            AND YEAR(p.expiration_date) = YEAR(CURRENT_DATE())
+                                                            AND MONTH(p.expiration_date) = MONTH(CURRENT_DATE())
+                                                            AND c.deleted_at IS NULL
+                                                            AND s.deleted_at IS NULL
+                                                            AND p.deleted_at IS NULL")[0]->rem;
 
-        $subjectsActive = Subject::where('status', 'ACTIVE')->get()->count();
+                $remunerationBalance = DB::select("SELECT SUM(p.teacher_remuneration) as bal
+                                                    FROM courses c
+                                                        INNER JOIN payments p on c.id = p.course_id
+                                                        INNER JOIN subjects s on c.subject_id = s.id
+                                                    WHERE s.teacher_id = $id
+                                                        AND p.expiration_date < CURRENT_DATE()
+                                                        AND p.teacher_remuneration_payment_date IS NULL
+                                                        AND c.deleted_at IS NULL
+                                                        AND s.deleted_at IS NULL
+                                                        AND p.deleted_at IS NULL")[0]->bal;
 
-        return view('home', compact(
-                'students',
-                'teachers',
-                'studentsInCourses',
-                'paymentsPaid',
-                'pendingPayments',
-                'pendingRemunerations',
-                'remunerationsPaid',
-                'usersActive',
-                'subjectCourses',
-                'subjectsActive',
-            )
-        );
+                $rst = compact(
+                    'currentStudents',
+                    'subjectsInProgress',
+                    'remunerationCurrentMonth',
+                    'remunerationBalance',
+                );
+                break;
+
+            case 'STUDENT':
+                $dueDateNext = Payment::join('courses', 'courses.student_id', '=', 'payments.courses_id')
+                    ->where('courses.student_id', $id)
+                    ->whereNull('payments.payment_date')
+                    ->orderBy('payments.payment_date', 'ASC')
+                    ->first()->expiration_date;
+
+                $currenMonthDebt = DB::select("SELECT SUM(p.amount) as debt
+                                                FROM courses c
+                                                    INNER JOIN payments p on c.id = p.course_id
+                                                    INNER JOIN subjects s on c.subject_id = s.id
+                                                WHERE c.student_id = $id
+                                                    AND YEAR(p.expiration_date) = YEAR(CURRENT_DATE())
+                                                    AND MONTH(p.expiration_date) = MONTH(CURRENT_DATE())
+                                                    AND p.payment_date IS NULL
+                                                    AND c.deleted_at IS NULL
+                                                    AND s.deleted_at IS NULL
+                                                    AND p.deleted_at IS NULL")[0]->debt;
+
+                $totalDebt = DB::select("SELECT SUM(p.amount) as debt
+                                                FROM courses c
+                                                    INNER JOIN payments p on c.id = p.course_id
+                                                    INNER JOIN subjects s on c.subject_id = s.id
+                                                WHERE c.student_id = $id
+                                                    AND p.payment_date IS NULL
+                                                    AND c.deleted_at IS NULL
+                                                    AND s.deleted_at IS NULL
+                                                    AND p.deleted_at IS NULL")[0]->debt;
+
+                $subjectsInProgress = Course::join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                    ->where('student_id', $id)
+                    ->where('start_date', '<=', now())
+                    ->where('finish_date', '>=', now())
+                    ->where('status', 'ACTIVE')
+                    ->get()->count();
+
+                $rst = compact(
+                    'currentMonthDebt',
+                    'subjectsInProgress',
+                    'dueDateNext',
+                    'totalDebt',
+                );
+                break;
+
+            default:
+                $rst = null;
+                break;
+        }
+
+        return $rst;
     }
 }

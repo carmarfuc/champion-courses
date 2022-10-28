@@ -7,6 +7,7 @@ use App\Models\Subject;
 use App\Models\User;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -74,15 +75,36 @@ class SubjectController extends Controller
      */
     public function index($filter = null)
     {
-        $subjects = $filter ? Subject::where('status', strtoupper($filter))->paginate() : Subject::paginate();
+
+        if (Auth::user()->role == 'ADMINISTRATOR'){
+            $subjects = $filter
+                ? Subject::where('status', strtoupper($filter))
+                    ->orderBy('finish_date', 'DESC')
+                    ->orderBy('start_date', 'DESC')
+                    ->paginate()
+                : Subject::paginate();
+
+            //Indicators
+            $subjectsActive = Subject::where('status', 'ACTIVE')->get()->count();
+            $subjectsInactive = Subject::where('status', 'INACTIVE')->get()->count();
+            $subjectsAll = Subject::get()->count();
+        }
+        elseif(Auth::user()->role == 'TEACHER'){
+            $subjects = $filter
+                ? Subject::where('status', strtoupper($filter))
+                    ->where('teacher_id', Auth::id())
+                    ->orderBy('finish_date', 'DESC')
+                    ->orderBy('start_date', 'DESC')
+                    ->paginate()
+                : Subject::where('teacher_id', Auth::id())->paginate();
+
+            //Indicators
+            $subjectsActive = Subject::where('teacher_id', Auth::id())->where('status', 'ACTIVE')->get()->count();
+            $subjectsInactive = Subject::where('teacher_id', Auth::id())->where('status', 'INACTIVE')->get()->count();
+            $subjectsAll = Subject::where('teacher_id', Auth::id())->get()->count();
+        }
 
         $title = "Subjects " . $filter ;
-
-        $subjectsActive = Subject::where('status', 'ACTIVE')->get()->count();
-
-        $subjectsInactive = Subject::where('status', 'INACTIVE')->get()->count();
-
-        $subjectsAll = Subject::get()->count();
 
         return view('subject.index', compact('subjects', 'title', 'subjectsActive', 'subjectsInactive', 'subjectsAll'))
             ->with('i', (request()->input('page', 1) - 1) * $subjects->perPage());

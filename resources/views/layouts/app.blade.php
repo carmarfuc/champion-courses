@@ -44,21 +44,25 @@
                     @if (Auth::check())
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('users.index') }}">{{ __('Users') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('subjects.index') }}">{{ __('Subjects') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('courses.index') }}">{{ __('Courses') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('payments.index') }}">{{ __('Payments') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('settings.index') }}">{{ __('Settings') }}</a>
-                        </li>
+                        @if (in_array(Auth::user()->role, ['ADMINISTRATOR', 'TEACHER']))
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('users.index') }}">{{ (Auth::user()->role == 'ADMINISTRATOR') ? 'Users' : 'My Students' }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('subjects.index') }}">{{ __('Subjects') }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('courses.index') }}">{{ __('Courses') }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('payments.index') }}">{{ __('Payments') }}</a>
+                            </li>
+                            @if (Auth::user()->role =='ADMINISTRATOR')
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('settings.index') }}">{{ __('Settings') }}</a>
+                                </li>
+                            @endif
+                        @endif
                     </ul>
                     @endif
 
@@ -80,7 +84,7 @@
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
+                                    <span class="badge text-bg-secondary text-white">{{ Auth::user()->role }}</span> {{ Auth::user()->name }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

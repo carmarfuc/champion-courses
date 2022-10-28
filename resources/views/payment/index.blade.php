@@ -15,12 +15,13 @@
                             <span id="card_title">
                                 {{ $title }}
                             </span>
-
-                             <div class="float-end">
-                                <a href="{{ route('payments.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
-                                  {{ __('Create New') }}
-                                </a>
-                              </div>
+                            @if (Auth::user()->role == 'ADMINISTRATOR')
+                                <div class="float-end">
+                                    <a href="{{ route('payments.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
+                                    {{ __('Create New') }}
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
@@ -29,7 +30,7 @@
                         </div>
                     @endif
 
-                    <div class="row mt-5 ms-1 me-1">
+                    <div class="row mt-4 ms-1 me-1">
                         <div class="container overflow-hidden text-center">
                             <div class="row gy-3">
                                 <div class="col-2">
@@ -75,8 +76,9 @@
                                         <th>Teacher Remuneration Payment Date</th>
 										<th>Student</th>
                                         <th>Subject</th>
-
+                                        @if (Auth::user()->role == 'ADMINISTRATOR')
                                         <th>Actions</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -103,11 +105,12 @@
                                             </td>
 											<td>{{ $payment->course->user->name }}</td>
                                             <td><b>{{ $payment->course->subject->name }}</b> <small class="text-muted">by {{$payment->course->subject->user->name}} <i>({{$payment->course->subject->start_date}} | {{$payment->course->subject->finish_date}})</i></small></td>
-
+                                            @if (Auth::user()->role == 'ADMINISTRATOR')
                                             <td>
                                                 <a class="btn btn-sm btn-success" href="{{ route('payments.edit',$payment->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
                                                 <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$payment->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                             </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>

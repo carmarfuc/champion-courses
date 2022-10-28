@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Models\Course;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class PaymentController
@@ -21,47 +22,125 @@ class PaymentController extends Controller
     {
         switch ($filter) {
             case 'pending_payments':
-                $payments = Payment::whereNull('payment_date')
-                    ->orderBy('payment_date', 'ASC')
-                    ->orderBy('payment_date', 'ASC')
-                    ->orderBy('expiration_date', 'DESC');
+                if (Auth::user()->role == 'ADMINISTRATOR')
+                    $payments = Payment::whereNull('payment_date')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'DESC');
+                elseif (Auth::user()->role == 'TEACHER'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                        ->whereNull('payment_date')
+                        ->where('subjects.teacher_id', Auth::id())
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'DESC');
+                }
                 $title = 'Pending Payments';
                 break;
 
             case 'payments_paid':
-                $payments = Payment::whereNotNull('payment_date')
-                    ->orderBy('teacher_remuneration_payment_date', 'ASC')
-                    ->orderBy('payment_date', 'ASC')
-                    ->orderBy('expiration_date', 'DESC');
+                if (Auth::user()->role == 'ADMINISTRATOR'){
+                    $payments = Payment::whereNotNull('payment_date')
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'DESC');
+                }
+                elseif (Auth::user()->role == 'TEACHER'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                        ->whereNotNull('payment_date')
+                        ->where('subjects.teacher_id', Auth::id())
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'DESC');
+                }
                 $title = 'Payments Paid';
                 break;
 
             case 'pending_remunerations':
-                $payments = Payment::whereNull('teacher_remuneration_payment_date')
-                    ->orderBy('teacher_remuneration_payment_date', 'ASC')
-                    ->orderBy('payment_date', 'ASC')
-                    ->orderBy('expiration_date', 'DESC');
+                if (Auth::user()->role == 'ADMINISTRATOR'){
+                    $payments = Payment::whereNull('teacher_remuneration_payment_date')
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'DESC');
+
+                }
+                elseif (Auth::user()->role == 'TEACHER'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                        ->whereNull('teacher_remuneration_payment_date')
+                        ->where('subjects.teacher_id', Auth::id())
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')
+                        ->orderBy('expiration_date', 'DESC');
+
+                }
                 $title = 'Pending Remunerations';
                 break;
 
             case 'remunerations_paid':
-                $payments = Payment::whereNotNull('teacher_remuneration_payment_date')->orderBy('teacher_remuneration_payment_date', 'ASC')->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                if (Auth::user()->role == 'ADMINISTRATOR'){
+                    $payments = Payment::whereNotNull('teacher_remuneration_payment_date')
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                }
+                elseif (Auth::user()->role == 'TEACHER'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                        ->where('subjects.teacher_id', Auth::id())
+                        ->whereNotNull('teacher_remuneration_payment_date')
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                }
                 $title = 'Remunerations Paid';
                 break;
 
             default:
-                $payments = Payment::orderBy('teacher_remuneration_payment_date', 'ASC')->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                if (Auth::user()->role == 'ADMINISTRATOR'){
+                    $payments = Payment::orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                }
+                elseif (Auth::user()->role == 'TEACHER'){
+                    $payments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                        ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                        ->where('subjects.teacher_id', Auth::id())
+                        ->orderBy('teacher_remuneration_payment_date', 'ASC')
+                        ->orderBy('payment_date', 'ASC')->orderBy('expiration_date', 'DESC');
+                }
                 $title = 'Payments';
         }
 
         $payments = $payments->paginate();
 
-        $pendingPayments = Payment::whereNull('payment_date')->get()->count();
-        $paymentsPaid = Payment::whereNotNull('payment_date')->get()->count();
-        $pendingRemunerations = Payment::whereNull('teacher_remuneration_payment_date')->get()->count();
-        $remunerationsPaid = Payment::whereNotNull('teacher_remuneration_payment_date')->get()->count();
-        $paymentsAll = Payment::get()->count();
-
+        if (Auth::user()->role == 'ADMINISTRATOR'){
+            $pendingPayments = Payment::whereNull('payment_date')->get()->count();
+            $paymentsPaid = Payment::whereNotNull('payment_date')->get()->count();
+            $pendingRemunerations = Payment::whereNull('teacher_remuneration_payment_date')->get()->count();
+            $remunerationsPaid = Payment::whereNotNull('teacher_remuneration_payment_date')->get()->count();
+            $paymentsAll = Payment::get()->count();
+        }
+        elseif (Auth::user()->role == 'TEACHER'){
+            $pendingPayments = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                ->where('subjects.teacher_id', Auth::id())
+                ->whereNull('payment_date')->get()->count();
+            $paymentsPaid = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                ->where('subjects.teacher_id', Auth::id())
+                ->whereNotNull('payment_date')->get()->count();
+            $pendingRemunerations = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                ->where('subjects.teacher_id', Auth::id())
+                ->whereNull('teacher_remuneration_payment_date')->get()->count();
+            $remunerationsPaid = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                ->where('subjects.teacher_id', Auth::id())
+                ->whereNotNull('teacher_remuneration_payment_date')->get()->count();
+            $paymentsAll = Payment::join('courses', 'payments.course_id', '=','courses.id')
+                ->join('subjects', 'courses.subject_id', '=','subjects.id')
+                ->where('subjects.teacher_id', Auth::id())
+                ->get()->count();
+        }
+        
         return view('payment.index', compact('payments', 'title', 'pendingPayments', 'paymentsPaid', 'pendingRemunerations', 'remunerationsPaid', 'paymentsAll'))
             ->with('i', (request()->input('page', 1) - 1) * $payments->perPage());
     }

@@ -15,12 +15,13 @@
                             <span id="card_title">
                                 {{ $title }}
                             </span>
-
-                             <div class="float-end">
-                                <a href="{{ route('subjects.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
-                                  {{ __('Create New') }}
-                                </a>
-                              </div>
+                            @if (Auth::user()->role == 'ADMINISTRATOR')
+                                <div class="float-end">
+                                    <a href="{{ route('subjects.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
+                                    {{ __('Create New') }}
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
@@ -29,7 +30,7 @@
                         </div>
                     @endif
 
-                    <div class="row mt-5 ms-1 me-1">
+                    <div class="row mt-4 ms-1 me-1">
                         <div class="container overflow-hidden text-center">
                             <div class="row gy-5">
                                 <div class="col-4">
@@ -73,7 +74,11 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
 
-											<td>{{ $subject->name }}</td>
+                                            <td>
+                                                <a class="fw-bolder" href="/courses/filter/subject/{{$subject->id}}" title="View the students of this subject.">
+                                                    {{ $subject->name }}
+                                                <a>
+                                            </td>
 											<td>$ {{ @money($subject->monthly_price) }}</td>
 											<td>{{ $subject->start_date }}</td>
 											<td>{{ $subject->finish_date }}</td>

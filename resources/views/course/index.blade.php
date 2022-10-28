@@ -15,13 +15,14 @@
                             <span id="card_title">
                                 <b>#{{$count}}</b> {{ $title }}
                             </span>
-
-                             <div class="float-end">
-                                @if(!$all)<a href="/courses" class="btn btn-secondary btn-sm">Show all records</a> @endif
-                                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm"  data-placement="left">
-                                  {{ __('Create New') }}
-                                </a>
-                              </div>
+                            @if (Auth::user()->role == 'ADMINISTRATOR')
+                                <div class="float-end">
+                                    @if(!$all)<a href="/courses" class="btn btn-secondary btn-sm">Show all records</a> @endif
+                                    <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm"  data-placement="left">
+                                        {{ __('Create New') }}
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
@@ -50,11 +51,11 @@
                                             <td>{{ ++$i }}</td>
 
                                             <td>
-                                                <a href="/courses/filter/student/{{$course->student_id}}">
+                                                <a title="View courses for this student" class="fw-bolder" href="/courses/filter/student/{{$course->student_id}}">
                                                     {{ $course->user->name }}</td>
                                                 </a>
 											<td>
-                                                <a href="/courses/filter/subject/{{$course->subject_id}}">
+                                                <a title="View students taking this course" class="fw-bolder" href="/courses/filter/subject/{{$course->subject_id}}">
                                                     <b>{{ $course->subject->name }}</b>
                                                     <small class="text-muted"> by {{$course->subject->user->name}} <i>({{$course->subject->start_date}} | {{$course->subject->finish_date}})</i></small>
                                                 </a>
@@ -63,7 +64,9 @@
 
                                             <td>
                                                 <a class="btn btn-sm btn-success" href="{{ route('courses.edit',$course->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$course->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                @if (Auth::user()->role == 'ADMINISTRATOR')
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="remove({{$course->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

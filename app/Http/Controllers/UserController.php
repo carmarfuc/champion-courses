@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class UserController
@@ -19,20 +20,37 @@ class UserController extends Controller
      */
     public function index($filter = null)
     {
-        $users = $filter ? User::where('role', strtoupper($filter))->paginate() : User::paginate();
 
-        $title = $filter ? ucfirst($filter). 's' : "Users";
+        if (Auth::user()->role == 'ADMINISTRATOR'){
+            //List
+            $users = $filter ? User::where('role', strtoupper($filter))->paginate() : User::paginate();
 
-        $students = User::where('role', 'STUDENT')->get()->count();
+            //Title
+            $title = $filter ? ucfirst($filter). 's' : "Users";
 
-        $teachers = User::where('role', 'TEACHER')->get()->count();
+            //Indicators
+            $students = User::where('role', 'STUDENT')->get()->count();
+            $teachers = User::where('role', 'TEACHER')->get()->count();
+            $admins = User::where('role', 'ADMINISTRATOR')->get()->count();
+            $usersActive = User::get()->count();
 
-        $admins = User::where('role', 'ADMINISTRATOR')->get()->count();
+            return view('user.index', compact('users', 'title', 'students', 'teachers', 'admins', 'usersActive'))
+                ->with('i', (request()->input('page', 1) - 1) * $users->perPage());
+        }
+        else{
+            //List
+            $users = User::join('courses', 'courses.student_id', '=', 'users.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->where('teacher_id', Auth::id())
+                ->where('role', 'STUDENT')
+                ->select('users.*')->paginate();
 
-        $usersActive = User::get()->count();
+            //Title
+            $title = "My students";
 
-        return view('user.index', compact('users', 'title', 'students', 'teachers', 'admins', 'usersActive'))
-            ->with('i', (request()->input('page', 1) - 1) * $users->perPage());
+            return view('user.index', compact('users', 'title'))
+                ->with('i', (request()->input('page', 1) - 1) * $users->perPage());
+        }
     }
 
     /**
@@ -114,6 +132,10 @@ class UserController extends Controller
         if (!$request->password){
             unset($rules['password']);
             unset($rules['password_confirm']);
+        }
+
+        if(!$request->role){
+            unset($rules['role']);
         }
 
         request()->validate($rules);

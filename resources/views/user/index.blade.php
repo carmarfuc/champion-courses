@@ -15,12 +15,13 @@
                             <span id="card_title">
                                 {{ $title }}
                             </span>
-
-                             <div class="float-end">
-                                <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
-                                  {{ __('Create New') }}
-                                </a>
-                              </div>
+                            @if(Auth::user()->role == 'ADMINISTRATOR')
+                                <div class="float-end">
+                                    <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm float-end"  data-placement="left">
+                                    {{ __('Create New') }}
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
@@ -28,8 +29,8 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
-
-                    <div class="row mt-5 ms-1 me-1">
+                    @if (Auth::user()->role == 'ADMINISTRATOR')
+                    <div class="row mt-4 ms-1 me-1">
                         <div class="container overflow-hidden text-center">
                             <div class="row gy-5">
                                 <div class="col-3">
@@ -55,6 +56,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                     <div class="card-body">
                         <div class="table-responsive">
@@ -75,7 +77,7 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
 
-											<td>{{ $user->name }}</td>
+											<td><a class="fw-bolder" href="courses/filter/student/{{$user->id}}" title="View this student's courses">{{ $user->name }}<a></td>
 											<td>{{ $user->email }}</td>
                                             <td>
                                                 <span class="badge @if($user->role == 'STUDENT') text-bg-secondary @elseif($user->role == 'TEACHER') text-bg-primary @else text-bg-success @endif">
@@ -85,7 +87,7 @@
 
                                             <td>
                                                 <a class="btn btn-sm btn-success" href="{{ route('users.edit',$user->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
-                                                @if (Auth::user()->email != $user->email)
+                                                @if (Auth::user()->email != $user->email && Auth::user()->role == 'ADMINISTRATOR')
                                                     <button type="button" class="btn btn-danger btn-sm" onclick="remove({{$user->id}})"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                                 @endif
                                             </td>

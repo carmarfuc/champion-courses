@@ -37,6 +37,5 @@ Version 8 of PHP was used with the Laravel 8 framework with MySQL database and B
 #### Basic ERD used
 The user entity manages the roles of administrator, teacher and student.
 
-![ERD](https://i.ibb.co/R0PGcn6/MER-champion-Courses.png)
-
+![ERD](https://i.ibb.co/R0PGcn6/MER-champion-Courses.png) 
 

@@ -39,3 +39,54 @@ The user entity manages the roles of administrator, teacher and student.
 
 ![ERD](https://raw.githubusercontent.com/marcocajeao/champion-courses/master/public/MER_championCourses.png) 
 
+##Installation
+For the installation it's required to have *MySQL* and *Composer* installed on your system or some application that contains them such as *XAMPP*, *WAMP*, *Devilbox*, etc. Then you must follow the following steps:
+
+- Create the directory where the project will be stored with the following command:
+
+``` sh
+    mkdir champion_courses
+```
+
+- Access the directory and clone the repository:
+
+``` sh
+    git clone https://github.com/marcocajeao/champion-courses.git
+```
+- Install dependencies with Composer:
+
+``` sh
+    composer install
+```
+
+- Copy the .env.example file as .env to edit it.
+
+``` sh
+    cp .env.example .env
+```
+
+- Create the database with the following name:
+
+``` sql
+    CREATE DATABASE champion_courses;
+```
+
+- Edit the `DB_DATABASE` variable of the `.env` file:
+
+``` sh
+    DB_DATABASE=champion_courses
+```
+
+- Run migrations and seeders for the database with the following command:
+
+``` php
+    php artisan migrate --seed
+```
+
+- Seeders create student, teacher and administrator users. The latter can be accessed with the following credentials:
+
+> **user:** admin@championcourses.loc
+> **password:** 1234
+
+***NOTE***: *For all other test users the password is the same as the administrator.*
+

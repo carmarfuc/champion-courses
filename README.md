@@ -65,7 +65,7 @@ For the installation it's required to have *MySQL* and *Composer* installed on y
     CREATE DATABASE champion_courses;
 ```
 
-- Edit the `DB_DATABASE` variable of the `.env` file:
+- Replace `DB_DATABASE=laravel` with `DB_DATABASE=champion_courses` in `.env` file:
 
 ``` sh
     DB_DATABASE=champion_courses
